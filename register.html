@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saarthi — Tourist Registration</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+  <style>
+    :root {
+      --navy:#1E3A8A; --navy-dk:#162d6f; --navy-lt:#2d4ea8;
+      --saffron:#F59E0B; --crimson:#EF4444; --emerald:#10B981;
+      --bg:#F0F7FF; --surface:#FFFFFF; --border:#E2E8F0;
+      --tx1:#0F172A; --tx2:#334155; --tx3:#64748B; --tx4:#94A3B8;
+      --radius:12px; --shadow:0 4px 24px rgba(30,58,138,0.09);
+      --transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+      --font:'Plus Jakarta Sans',sans-serif;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{font-family:var(--font);background:linear-gradient(135deg,#F0F7FF 0%,#E0F2FE 100%);color:var(--tx1);line-height:1.7;min-height:100vh;padding-bottom:40px;}
+
+    /* ── HEADER ── */
+    header{background:#fff;border-bottom:1px solid var(--border);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(30,58,138,0.06);}
+    .logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+    .logo-icon{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--navy),var(--navy-lt));display:flex;align-items:center;justify-content:center;overflow:hidden;}
+    .logo-icon img{width:100%;height:100%;object-fit:contain;}
+    .logo-text{font-size:1.2rem;font-weight:800;color:var(--navy);}
+    .logo-text span{color:var(--saffron);}
+    .back-btn{display:inline-flex;align-items:center;gap:7px;color:var(--navy);font-weight:500;font-size:0.875rem;text-decoration:none;padding:7px 14px;border-radius:8px;transition:var(--transition);}
+    .back-btn:hover{background:#EFF6FF;}
+
+    /* ── PAGE LAYOUT ── */
+    .page{max-width:740px;margin:40px auto;padding:0 20px 60px;}
+    .page-head{text-align:center;margin-bottom:32px;}
+    .page-head h1{font-size:2rem;font-weight:800;color:var(--tx1);letter-spacing:-0.5px;margin-bottom:8px;}
+    .page-head p{color:var(--tx3);font-size:0.95rem;}
+
+    /* ── PROGRESS STEPPER ── */
+    .stepper{display:flex;align-items:flex-start;margin-bottom:36px;position:relative;}
+    .stepper::before{content:'';position:absolute;top:19px;left:calc(12.5%);right:calc(12.5%);height:2px;background:var(--border);z-index:0;}
+    .step-item{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;}
+    .step-circle{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.875rem;font-weight:700;border:2px solid var(--border);background:#fff;color:var(--tx4);transition:var(--transition);}
+    .step-item.active .step-circle{background:var(--navy);color:#fff;border-color:var(--navy);box-shadow:0 0 0 4px rgba(30,58,138,0.12);}
+    .step-item.done .step-circle{background:var(--emerald);color:#fff;border-color:var(--emerald);}
+    .step-label{font-size:0.68rem;font-weight:600;color:var(--tx4);margin-top:7px;text-align:center;}
+    .step-item.active .step-label{color:var(--navy);}
+    .step-item.done .step-label{color:var(--emerald);}
+    /* progress line fill */
+    .stepper-line{position:absolute;top:19px;left:calc(12.5%);height:2px;background:linear-gradient(90deg,var(--emerald),var(--navy));z-index:0;transition:width 0.5s ease;width:0%;}
+
+    /* ── FORM CARD ── */
+    .form-card{background:#fff;border-radius:20px;box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden;display:none;}
+    .form-card.active{display:block;}
+    .card-head{background:linear-gradient(135deg,var(--navy),var(--navy-lt));padding:26px 30px;color:#fff;}
+    .card-head h2{font-size:1.25rem;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:10px;}
+    .card-head p{font-size:0.83rem;opacity:0.72;}
+    .card-body{padding:30px;}
+
+    /* ── FORM GRID ── */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+    .form-grid.col1{grid-template-columns:1fr;}
+    .fg-full{grid-column:1/-1;}
+    .form-group{display:flex;flex-direction:column;gap:5px;}
+    label{font-size:0.79rem;font-weight:600;color:var(--tx2);letter-spacing:0.2px;}
+    label .req{color:var(--crimson);}
+    input,select,textarea{
+      width:100%;padding:11px 13px;
+      border:1.5px solid var(--border);border-radius:var(--radius);
+      font-size:0.9rem;font-family:var(--font);color:var(--tx1);
+      background:#FAFBFD;outline:none;transition:var(--transition);
+    }
+    input:focus,select:focus,textarea:focus{border-color:var(--navy);background:#fff;box-shadow:0 0 0 3px rgba(30,58,138,0.1);}
+    input.err,select.err{border-color:var(--crimson);}
+    .err-msg{font-size:0.7rem;color:var(--crimson);min-height:14px;}
+    textarea{resize:vertical;min-height:80px;}
+    select option{background:#fff;}
+    .input-icon-wrap{position:relative;}
+    .input-icon-wrap i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--tx4);font-size:0.85rem;}
+    .input-icon-wrap input{padding-left:36px;}
+
+    /* ── PHOTO UPLOAD ── */
+    .photo-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:22px;text-align:center;cursor:pointer;transition:var(--transition);position:relative;background:#FAFBFD;}
+    .photo-zone:hover,.photo-zone.has{border-color:var(--navy);background:#EFF6FF;}
+    .photo-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+    .photo-zone .ph-preview{width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 10px;border:3px solid var(--navy);display:none;}
+    .photo-zone .ph-icon{font-size:2rem;color:var(--tx4);margin-bottom:8px;}
+    .photo-zone .ph-text{font-size:0.83rem;color:var(--tx3);}
+
+    /* ── DOC BOX ── */
+    .doc-upload-box{border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:var(--transition);position:relative;}
+    .doc-upload-box:hover{border-color:var(--navy);background:#F8FBFF;}
+    .doc-upload-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+    .doc-upload-box.done{border-color:var(--emerald);background:#F0FDF4;}
+    .doc-box-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;background:#EFF6FF;color:var(--navy);}
+    .doc-upload-box.done .doc-box-icon{background:#ECFDF5;color:var(--emerald);}
+    .doc-box-info h5{font-size:0.88rem;font-weight:600;color:var(--tx1);}
+    .doc-box-info p{font-size:0.72rem;color:var(--tx4);}
+    .doc-status{margin-left:auto;font-size:0.72rem;font-weight:600;color:var(--tx4);}
+    .doc-status.ok{color:var(--emerald);}
+
+    /* ── TOGGLES ── */
+    .toggle-block{background:#F8FAFC;border:1px solid var(--border);border-radius:var(--radius);padding:18px;}
+    .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+    .toggle-row:last-child{border-bottom:none;}
+    .toggle-info h5{font-size:0.88rem;font-weight:600;color:var(--tx1);}
+    .toggle-info p{font-size:0.75rem;color:var(--tx4);margin-top:2px;}
+    .tg{position:relative;width:42px;height:23px;flex-shrink:0;}
+    .tg input{opacity:0;width:0;height:0;}
+    .tg-slider{position:absolute;inset:0;background:var(--border);border-radius:50px;cursor:pointer;transition:var(--transition);}
+    .tg-slider::after{content:'';position:absolute;top:3px;left:3px;width:17px;height:17px;border-radius:50%;background:#fff;transition:var(--transition);}
+    .tg input:checked+.tg-slider{background:var(--navy);}
+    .tg input:checked+.tg-slider::after{transform:translateX(19px);}
+
+    /* ── INSURANCE BOX ── */
+    .insurance-box{background:linear-gradient(135deg,#FFFBEB,#FEF3C7);border:1.5px solid rgba(245,158,11,0.25);border-radius:var(--radius);padding:18px;display:flex;gap:14px;margin-top:16px;}
+    .ins-icon{width:42px;height:42px;background:rgba(245,158,11,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--saffron);flex-shrink:0;}
+    .ins-body h5{font-size:0.88rem;font-weight:700;color:#92400E;margin-bottom:4px;}
+    .ins-body p{font-size:0.78rem;color:#78350F;line-height:1.65;}
+    .ins-tag{display:inline-flex;align-items:center;gap:4px;background:var(--saffron);color:#fff;font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:50px;margin-top:8px;}
+
+    /* ── ITINERARY ── */
+    .day-card{background:#F8FAFC;border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px;}
+    .day-card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+    .day-card-top h5{font-size:0.85rem;font-weight:700;color:var(--navy);}
+    .remove-day{background:none;border:none;color:var(--crimson);cursor:pointer;font-size:0.8rem;}
+    .add-day{width:100%;padding:10px;border:1.5px dashed var(--border);border-radius:var(--radius);background:none;font-family:var(--font);font-size:0.85rem;font-weight:600;color:var(--navy);cursor:pointer;transition:var(--transition);}
+    .add-day:hover{background:#EFF6FF;border-color:var(--navy);}
+
+    /* ── REVIEW ── */
+    .review-block{margin-bottom:20px;}
+    .review-block h4{font-size:0.72rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--navy);margin-bottom:10px;padding-bottom:7px;border-bottom:2px solid #EFF6FF;}
+    .review-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .rv{padding:9px 12px;background:#F8FAFC;border-radius:8px;}
+    .rv-label{font-size:0.67rem;font-weight:600;color:var(--tx4);margin-bottom:2px;}
+    .rv-value{font-size:0.85rem;font-weight:600;color:var(--tx1);}
+
+    /* ── PIN ── */
+    .pin-wrap{text-align:center;}
+    .pin-title{font-size:0.95rem;font-weight:700;color:var(--tx1);margin-bottom:4px;}
+    .pin-sub{font-size:0.78rem;color:var(--tx3);margin-bottom:16px;}
+    .pin-row{display:flex;gap:10px;justify-content:center;margin-bottom:16px;}
+    .pin-d{width:52px;height:58px;border:2px solid var(--border);border-radius:12px;font-size:1.5rem;font-weight:800;text-align:center;font-family:var(--font);color:var(--navy);outline:none;background:#FAFBFD;transition:var(--transition);}
+    .pin-d:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(30,58,138,0.1);}
+
+    /* ── DISCLAIMER ── */
+    .disclaimer{background:#FEF2F2;border:1px solid rgba(239,68,68,0.15);border-radius:var(--radius);padding:12px 14px;font-size:0.79rem;color:#7F1D1D;line-height:1.7;margin-bottom:20px;}
+
+    /* ── FORM ACTIONS ── */
+    .form-actions{display:flex;justify-content:space-between;align-items:center;margin-top:24px;padding-top:20px;border-top:1px solid var(--border);}
+
+    /* ── BUTTONS ── */
+    .btn{display:inline-flex;align-items:center;gap:7px;padding:11px 22px;border-radius:10px;font-weight:600;font-size:0.875rem;text-decoration:none;border:none;cursor:pointer;transition:var(--transition);font-family:var(--font);}
+    .btn-primary{background:var(--navy);color:#fff;}
+    .btn-primary:hover{background:var(--navy-dk);}
+    .btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--border);}
+    .btn-outline:hover{border-color:var(--navy);}
+    .btn-emerald{background:var(--emerald);color:#fff;}
+    .btn-lg{padding:13px 26px;font-size:1rem;}
+
+    /* ── LOADING OVERLAY ── */
+    .loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,0.92);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px);}
+    .loading-overlay.show{display:flex;}
+    .spinner{width:50px;height:50px;border:5px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:16px;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .loading-steps{display:flex;flex-direction:column;gap:8px;text-align:left;}
+    .ls{font-size:0.83rem;color:var(--tx3);display:flex;align-items:center;gap:8px;}
+    .ls.done{color:var(--emerald);font-weight:600;}
+    .ls i{width:16px;}
+
+    /* ── SUCCESS SCREEN ── */
+    .success-screen{display:none;text-align:center;padding:40px 30px;}
+    .success-screen.show{display:block;}
+    .success-ico{width:80px;height:80px;border-radius:50%;background:#ECFDF5;display:flex;align-items:center;justify-content:center;font-size:2.2rem;color:var(--emerald);margin:0 auto 18px;}
+    .success-screen h2{font-size:1.7rem;font-weight:800;color:var(--tx1);margin-bottom:8px;}
+    .success-screen > p{color:var(--tx3);margin-bottom:24px;font-size:0.95rem;}
+    .id-card-preview{background:#fff;border:1px solid var(--border);border-radius:20px;padding:28px;max-width:360px;margin:0 auto 24px;box-shadow:var(--shadow);}
+    .id-user-photo{width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid var(--navy);margin:0 auto 12px;display:none;}
+    .id-user-name{font-size:1.3rem;font-weight:800;color:var(--navy);margin-bottom:4px;}
+    .id-user-id{font-size:0.8rem;color:var(--tx3);margin-bottom:4px;}
+    .id-badge{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,var(--navy),var(--navy-lt));color:#fff;font-size:0.72rem;font-weight:700;padding:4px 12px;border-radius:50px;margin-bottom:16px;}
+    .id-validity{font-size:0.75rem;color:var(--tx3);margin-bottom:16px;display:flex;align-items:center;gap:5px;justify-content:center;}
+    .id-validity i{color:var(--emerald);}
+    #qrCodeContainer{margin:0 auto;display:flex;justify-content:center;}
+    #qrCodeContainer canvas{border:6px solid #fff;box-shadow:var(--shadow);border-radius:10px;}
+    .id-info-note{background:#EFF6FF;border:1px solid #BFDBFE;border-radius:var(--radius);padding:12px;font-size:0.78rem;color:#1E40AF;margin-top:16px;text-align:left;line-height:1.7;}
+    .dl-btn{background:var(--navy);color:#fff;border:none;padding:12px 22px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-family:var(--font);font-size:0.9rem;font-weight:600;margin:4px;}
+    .home-btn{background:#fff;color:var(--navy);border:1.5px solid var(--navy);padding:11px 22px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-family:var(--font);font-size:0.9rem;font-weight:600;text-decoration:none;margin:4px;}
+
+    /* ── TOOLTIP / SECURITY NOTE ── */
+    .security-note{background:#EFF6FF;border:1px solid #BFDBFE;border-radius:var(--radius);padding:14px;display:flex;gap:10px;margin-top:0;}
+    .security-note i{color:var(--navy);flex-shrink:0;margin-top:2px;}
+    .security-note-body .sn-title{font-size:0.83rem;font-weight:700;color:var(--navy);margin-bottom:3px;}
+    .security-note-body p{font-size:0.77rem;color:var(--tx3);line-height:1.6;}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:600px){
+      .form-grid{grid-template-columns:1fr;}
+      .review-grid{grid-template-columns:1fr;}
+      .card-body{padding:20px;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <a href="index.html" class="logo">
+    <div class="logo-icon">
+      <img src="saarthi_logo.png" alt="S" onerror="this.parentElement.style.fontSize='1.2rem';this.parentElement.style.color='#fff';this.parentElement.style.fontWeight='900';this.remove();this.parentElement.textContent='S'">
+    </div>
+    <span class="logo-text">SAAR<span>THI</span></span>
+  </a>
+  <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
+</header>
+
+<div class="page">
+  <div class="page-head">
+    <h1>Tourist Registration</h1>
+    <p>Complete your KYC to receive your blockchain-secured Digital Tourist ID</p>
+  </div>
+
+  <!-- STEPPER -->
+  <div class="stepper" id="stepper">
+    <div class="stepper-line" id="stepper-line"></div>
+    <div class="step-item active" id="si-1">
+      <div class="step-circle" id="sc-1">1</div>
+      <div class="step-label">Personal Info</div>
+    </div>
+    <div class="step-item" id="si-2">
+      <div class="step-circle" id="sc-2">2</div>
+      <div class="step-label">Documents</div>
+    </div>
+    <div class="step-item" id="si-3">
+      <div class="step-circle" id="sc-3">3</div>
+      <div class="step-label">Travel Plans</div>
+    </div>
+    <div class="step-item" id="si-4">
+      <div class="step-circle" id="sc-4">4</div>
+      <div class="step-label">Review & PIN</div>
+    </div>
+  </div>
+
+  <!-- ══ STEP 1: PERSONAL INFO ══ -->
+  <div class="form-card active" id="step1">
+    <div class="card-head">
+      <h2><i class="fas fa-user"></i> Personal Information</h2>
+      <p>Tell us who you are — this forms the base of your secure Digital ID</p>
+    </div>
+    <div class="card-body">
+
+      <!-- PHOTO UPLOAD -->
+      <div style="text-align:center;margin-bottom:22px;">
+        <div class="photo-zone" id="photo-zone">
+          <input type="file" accept="image/*" id="userphoto" onchange="handlePhoto(this)">
+          <img class="ph-preview" id="photo-preview">
+          <div class="ph-icon" id="photo-icon"><i class="fas fa-camera"></i></div>
+          <div class="ph-text" id="photo-text">Upload your photo<br><small style="color:var(--tx4);">JPG or PNG, max 5 MB</small></div>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Full Name <span class="req">*</span></label>
+          <input type="text" id="fullname" placeholder="As on your ID document">
+          <div class="err-msg" id="err-fullname"></div>
+        </div>
+        <div class="form-group">
+          <label>Date of Birth <span class="req">*</span></label>
+          <input type="date" id="dob">
+          <div class="err-msg" id="err-dob"></div>
+        </div>
+        <div class="form-group">
+          <label>Gender <span class="req">*</span></label>
+          <select id="gender">
+            <option value="">Select gender</option>
+            <option>Male</option><option>Female</option><option>Other</option><option>Prefer not to say</option>
+          </select>
+          <div class="err-msg" id="err-gender"></div>
+        </div>
+        <div class="form-group">
+          <label>Nationality <span class="req">*</span></label>
+          <input type="text" id="nationality" placeholder="Enter nationality">
+          <div class="err-msg" id="err-nationality"></div>
+        </div>
+        <div class="form-group">
+          <label>Phone Number <span class="req">*</span></label>
+          <div class="input-icon-wrap">
+            <i class="fas fa-phone"></i>
+            <input type="tel" id="phone" placeholder="+91 XXXXX XXXXX">
+          </div>
+          <div class="err-msg" id="err-phone"></div>
+        </div>
+        <div class="form-group">
+          <label>Email Address <span class="req">*</span></label>
+          <div class="input-icon-wrap">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="email" placeholder="you@email.com">
+          </div>
+          <div class="err-msg" id="err-email"></div>
+        </div>
+        <div class="form-group">
+          <label>Blood Group <span class="req">*</span></label>
+          <select id="bloodgroup">
+            <option value="">Select blood group</option>
+            <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+            <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+          </select>
+          <div class="err-msg" id="err-bloodgroup"></div>
+        </div>
+        <div class="form-group">
+          <label>Home State / Country</label>
+          <input type="text" id="homestate" placeholder="e.g. Delhi, India">
+        </div>
+        <div class="form-group fg-full">
+          <label>Known Allergies / Medical Conditions</label>
+          <textarea id="allergies" placeholder="List any allergies or conditions emergency responders should know…"></textarea>
+        </div>
+
+        <!-- EMERGENCY CONTACTS -->
+        <div class="form-group fg-full" style="padding-top:4px;">
+          <div style="font-size:0.82rem;font-weight:700;color:var(--navy);margin-bottom:10px;letter-spacing:0.3px;text-transform:uppercase;">Emergency Contacts</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Contact Name <span class="req">*</span></label>
+              <input type="text" id="ec-name" placeholder="Full name">
+              <div class="err-msg" id="err-ec-name"></div>
+            </div>
+            <div class="form-group">
+              <label>Contact Phone <span class="req">*</span></label>
+              <div class="input-icon-wrap">
+                <i class="fas fa-phone-alt"></i>
+                <input type="tel" id="ec-phone" placeholder="+91 XXXXX XXXXX">
+              </div>
+              <div class="err-msg" id="err-ec-phone"></div>
+            </div>
+            <div class="form-group">
+              <label>Relationship</label>
+              <select id="ec-relation">
+                <option value="">Select relation</option>
+                <option>Parent</option><option>Spouse</option><option>Sibling</option><option>Friend</option><option>Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Second Contact Phone (Optional)</label>
+              <div class="input-icon-wrap">
+                <i class="fas fa-phone-alt"></i>
+                <input type="tel" id="ec2-phone" placeholder="+91 XXXXX XXXXX">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <span></span>
+        <button class="btn btn-primary btn-lg" onclick="goNext(2)">
+          Continue <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STEP 2: DOCUMENTS ══ -->
+  <div class="form-card" id="step2">
+    <div class="card-head">
+      <h2><i class="fas fa-id-card"></i> Document Verification</h2>
+      <p>Upload your identity documents for blockchain-secured KYC</p>
+    </div>
+    <div class="card-body">
+      <div class="form-grid" style="margin-bottom:20px;">
+        <div class="form-group">
+          <label>Document Type <span class="req">*</span></label>
+          <select id="doctype" onchange="updateDocLabel()">
+            <option value="">Select document</option>
+            <option value="passport">Passport</option>
+            <option value="aadhar">Aadhaar Card</option>
+            <option value="license">Driving Licence</option>
+            <option value="voter">Voter ID</option>
+          </select>
+          <div class="err-msg" id="err-doctype"></div>
+        </div>
+        <div class="form-group">
+          <label id="docnum-label">Document Number <span class="req">*</span></label>
+          <input type="text" id="docnum" placeholder="Enter document number">
+          <div class="err-msg" id="err-docnum"></div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+        <div class="doc-upload-box" id="dbox-front">
+          <input type="file" accept="image/*,application/pdf" onchange="handleDoc(this,'front')">
+          <div class="doc-box-icon"><i class="fas fa-id-card"></i></div>
+          <div class="doc-box-info">
+            <h5>Front of Document</h5>
+            <p>JPG, PNG or PDF · Max 10 MB</p>
+          </div>
+          <span class="doc-status" id="ds-front">Upload</span>
+        </div>
+        <div class="doc-upload-box" id="dbox-back">
+          <input type="file" accept="image/*,application/pdf" onchange="handleDoc(this,'back')">
+          <div class="doc-box-icon"><i class="fas fa-id-card"></i></div>
+          <div class="doc-box-info">
+            <h5>Back of Document</h5>
+            <p>JPG, PNG or PDF · Max 10 MB</p>
+          </div>
+          <span class="doc-status" id="ds-back">Upload</span>
+        </div>
+        <div class="doc-upload-box" id="dbox-selfie">
+          <input type="file" accept="image/*" capture="user" onchange="handleDoc(this,'selfie')">
+          <div class="doc-box-icon"><i class="fas fa-camera"></i></div>
+          <div class="doc-box-info">
+            <h5>Live Selfie (Liveness Check)</h5>
+            <p>Camera · Used for biometric verification</p>
+          </div>
+          <span class="doc-status" id="ds-selfie">Capture</span>
+        </div>
+      </div>
+      <div class="err-msg" id="err-docs" style="margin-bottom:12px;"></div>
+
+      <div class="security-note">
+        <i class="fas fa-lock" style="color:var(--navy);margin-top:2px;"></i>
+        <div class="security-note-body">
+          <div class="sn-title">Zero-Knowledge KYC</div>
+          <p>Your documents are never stored on our servers. Only a cryptographic hash is written to the Polygon blockchain. Saarthi cannot read your Aadhaar or passport number — only the verification proof exists.</p>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-outline" onclick="goNext(1)"><i class="fas fa-arrow-left"></i> Back</button>
+        <button class="btn btn-primary btn-lg" onclick="goNext(3)">Continue <i class="fas fa-arrow-right"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STEP 3: TRAVEL PLANS ══ -->
+  <div class="form-card" id="step3">
+    <div class="card-head">
+      <h2><i class="fas fa-route"></i> Travel Plans</h2>
+      <p>Tell us about your trip so we can tailor safety monitoring for your journey</p>
+    </div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Registration / Entry Point <span class="req">*</span></label>
+          <input type="text" id="regpoint" placeholder="Airport, hotel, or check-post">
+          <div class="err-msg" id="err-regpoint"></div>
+        </div>
+        <div class="form-group">
+          <label>Check-In Date <span class="req">*</span></label>
+          <input type="date" id="checkin">
+          <div class="err-msg" id="err-checkin"></div>
+        </div>
+        <div class="form-group">
+          <label>Check-Out Date <span class="req">*</span></label>
+          <input type="date" id="checkout">
+          <div class="err-msg" id="err-checkout"></div>
+        </div>
+        <div class="form-group">
+          <label>Primary State to Visit <span class="req">*</span></label>
+          <select id="primary-state">
+            <option value="">Select state</option>
+            <option>Assam</option><option>Meghalaya</option><option>Arunachal Pradesh</option>
+            <option>Nagaland</option><option>Manipur</option><option>Mizoram</option><option>Tripura</option>
+            <option>Sikkim</option><option>Himachal Pradesh</option><option>Uttarakhand</option>
+            <option>Rajasthan</option><option>Goa</option><option>Kerala</option><option>Tamil Nadu</option>
+            <option>Other</option>
+          </select>
+          <div class="err-msg" id="err-state"></div>
+        </div>
+        <div class="form-group fg-full">
+          <label>Hotel / Accommodation Name (Optional)</label>
+          <div class="input-icon-wrap">
+            <i class="fas fa-hotel"></i>
+            <input type="text" id="hotel-name" placeholder="e.g. Brahmaputra Grand Hotel, Guwahati">
+          </div>
+        </div>
+        <div class="form-group fg-full">
+          <label>Hotel Address / Area</label>
+          <input type="text" id="hotel-address" placeholder="Area or full address">
+        </div>
+      </div>
+
+      <!-- ITINERARY -->
+      <div style="margin:20px 0 10px;">
+        <label style="display:block;margin-bottom:10px;">Day-wise Itinerary (Recommended)</label>
+        <div id="itinerary-wrap"></div>
+        <button class="add-day" onclick="addDay()"><i class="fas fa-plus"></i> Add a Day</button>
+      </div>
+
+      <!-- TRACKING -->
+      <div class="toggle-block" style="margin:20px 0;">
+        <div style="font-size:0.8rem;font-weight:700;color:var(--tx1);margin-bottom:12px;">Privacy &amp; Tracking Preferences</div>
+        <div class="toggle-row">
+          <div class="toggle-info"><h5>Family Real-Time Tracking</h5><p>Share live location with emergency contacts (opt-in)</p></div>
+          <label class="tg"><input type="checkbox" id="family-track"><span class="tg-slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info"><h5>Law Enforcement Tracking</h5><p>Allow authorities to view location for safety monitoring</p></div>
+          <label class="tg"><input type="checkbox" id="law-track" checked><span class="tg-slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info"><h5>AI Anomaly Detection</h5><p>Enable AI to flag unusual activity patterns proactively</p></div>
+          <label class="tg"><input type="checkbox" id="ai-detect" checked><span class="tg-slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info"><h5>Geo-Fence Alerts</h5><p>Get notified when entering restricted or high-risk zones</p></div>
+          <label class="tg"><input type="checkbox" id="geo-alerts" checked><span class="tg-slider"></span></label>
+        </div>
+      </div>
+
+      <!-- INSURANCE -->
+      <div class="insurance-box">
+        <div class="ins-icon"><i class="fas fa-file-contract"></i></div>
+        <div class="ins-body">
+          <h5>Micro-Insurance Smart Contract (Recommended)</h5>
+          <p>Pay ₹50 via UPI. Locked on Polygon blockchain. Auto-pays ₹2,000 emergency payout when e-FIR theft is verified by police — zero paperwork, zero waiting.</p>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:10px;">
+            <span class="ins-tag"><i class="fas fa-rupee-sign"></i> ₹50 premium</span>
+            <label class="tg"><input type="checkbox" id="insurance-opt"><span class="tg-slider"></span></label>
+            <span style="font-size:0.78rem;color:#78350F;font-weight:600;">Enable</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-outline" onclick="goNext(2)"><i class="fas fa-arrow-left"></i> Back</button>
+        <button class="btn btn-primary btn-lg" onclick="goNext(4)">Review &amp; Set PIN <i class="fas fa-arrow-right"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STEP 4: REVIEW + PIN ══ -->
+  <div class="form-card" id="step4">
+    <div class="card-head">
+      <h2><i class="fas fa-check-double"></i> Review &amp; Set Trip PIN</h2>
+      <p>Confirm your details and set your security PIN — required to end your trip</p>
+    </div>
+    <div class="card-body">
+
+      <!-- REVIEW SECTIONS -->
+      <div class="review-block">
+        <h4>Personal Information</h4>
+        <div class="review-grid" id="rv-personal"></div>
+      </div>
+      <div class="review-block">
+        <h4>Document Verification</h4>
+        <div class="review-grid" id="rv-docs"></div>
+      </div>
+      <div class="review-block">
+        <h4>Travel Plans</h4>
+        <div class="review-grid" id="rv-travel"></div>
+      </div>
+
+      <!-- PIN SETUP -->
+      <div style="background:linear-gradient(135deg,#EFF6FF,#F0FDF4);border-radius:var(--radius);padding:24px;margin:20px 0;">
+        <div class="pin-wrap">
+          <div class="pin-title"><i class="fas fa-lock" style="color:var(--navy);"></i> Set Your 4-Digit Trip Security PIN</div>
+          <div class="pin-sub">Required to end your trip. Do NOT share this PIN with anyone.</div>
+          <div class="pin-row" id="pin-set">
+            <input class="pin-d" type="password" maxlength="1" inputmode="numeric" oninput="pinNext(this,0)">
+            <input class="pin-d" type="password" maxlength="1" inputmode="numeric" oninput="pinNext(this,1)">
+            <input class="pin-d" type="password" maxlength="1" inputmode="numeric" oninput="pinNext(this,2)">
+            <input class="pin-d" type="password" maxlength="1" inputmode="numeric" oninput="pinNext(this,3)">
+          </div>
+          <div style="font-size:0.8rem;color:var(--tx3);margin-bottom:10px;">Confirm PIN</div>
+          <div class="pin-row" id="pin-confirm">
+            <input class="pin-d" type="password" maxlength="1" inputmode="numeric" oninput="pinNext(this,4)">
+            <input class="pin-d" type="password" maxlength="1" inputmode="numeric" oninput="pinNext(this,5)">
+            <input class="pin-d" type="password" maxlength="1" inputmode="numeric" oninput="pinNext(this,6)">
+            <input class="pin-d" type="password" maxlength="1" inputmode="numeric" oninput="pinNext(this,7)">
+          </div>
+          <div class="err-msg" id="err-pin" style="text-align:center;margin-top:6px;"></div>
+        </div>
+      </div>
+
+      <div class="disclaimer">
+        <i class="fas fa-info-circle" style="color:var(--crimson);"></i>
+        <strong>Important:</strong> By registering, you consent to Saarthi sharing your location and Digital ID with law enforcement and tourism authorities as per your selected preferences. All data is AES-256 encrypted and PDPB-compliant. Your document images are never stored — only cryptographic proofs on blockchain.
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-outline" onclick="goNext(3)"><i class="fas fa-arrow-left"></i> Back</button>
+        <button class="btn btn-primary btn-lg" onclick="submitForm()">
+          <i class="fas fa-shield-alt"></i> Generate Digital ID
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SUCCESS ══ -->
+  <div class="form-card success-screen" id="success-screen">
+    <div class="success-ico"><i class="fas fa-check"></i></div>
+    <h2>Registration Successful!</h2>
+    <p>Your blockchain-secured Digital Tourist ID is live on Polygon. Keep this QR code with you throughout your trip.</p>
+
+    <div class="id-card-preview">
+      <img class="id-user-photo" id="successImage" alt="Photo">
+      <div class="id-user-name" id="successName">Tourist Name</div>
+      <div class="id-user-id">Tourist ID: <strong id="successId">STH-XX-XXXXXX</strong></div>
+      <div class="id-badge"><i class="fas fa-shield-alt"></i> Blockchain Verified · Polygon</div>
+      <div class="id-validity"><i class="fas fa-calendar-check"></i><span id="validity-text">Valid for trip duration</span></div>
+      <div id="qrCodeContainer"></div>
+      <div class="id-info-note">
+        <i class="fas fa-info-circle" style="color:var(--navy);"></i>
+        <strong>When scanned, shows:</strong> Your name, photo, blood group, allergies, hotel, emergency contact, and trip validity — nothing else. Your Aadhaar/passport numbers are never exposed.
+      </div>
+    </div>
+
+    <div style="margin-top:4px;">
+      <button class="dl-btn" onclick="downloadID()"><i class="fas fa-download"></i> Download ID Card</button>
+      <a href="index.html" class="home-btn"><i class="fas fa-home"></i> Go to Home</a>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <p style="font-weight:600;color:var(--tx1);margin-bottom:14px;">Processing your registration…</p>
+  <div class="loading-steps">
+    <div class="ls" id="ls1"><i class="fas fa-circle-notch fa-spin"></i> Verifying KYC documents…</div>
+    <div class="ls" id="ls2"><i class="fas fa-circle"></i> Minting Digital ID on Polygon…</div>
+    <div class="ls" id="ls3"><i class="fas fa-circle"></i> Encrypting &amp; storing trip data…</div>
+    <div class="ls" id="ls4"><i class="fas fa-circle"></i> Generating QR code…</div>
+  </div>
+</div>
+
+<script>
+/* ── FORM DATA STORE ── */
+const FD = {};
+let dayCount = 0;
+let currentStep = 1;
+
+/* ── STEPPER UPDATE ── */
+function updateStepper(to) {
+  for (let i = 1; i <= 4; i++) {
+    const si = document.getElementById('si-'+i);
+    const sc = document.getElementById('sc-'+i);
+    si.className = 'step-item';
+    if (i < to) { si.classList.add('done'); sc.innerHTML = '<i class="fas fa-check"></i>'; }
+    else if (i === to) { si.classList.add('active'); sc.textContent = i; }
+    else { sc.textContent = i; }
+  }
+  // Line width = (to-1)/3 * ~75% (approx between markers)
+  const pct = ((to-1)/3)*75;
+  document.getElementById('stepper-line').style.width = pct + '%';
+}
+
+/* ── NAVIGATE ── */
+function goNext(step) {
+  if (step > currentStep && !validate(currentStep)) return;
+  document.getElementById('step'+currentStep).classList.remove('active');
+  currentStep = step;
+  document.getElementById('step'+step).classList.add('active');
+  if (step === 4) buildReview();
+  updateStepper(step);
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ── VALIDATION ── */
+function req(id, errId, msg) {
+  const el = document.getElementById(id);
+  if (!el) return true;
+  const val = el.value.trim();
+  if (!val) {
+    document.getElementById(errId).textContent = msg || 'Required';
+    el.classList.add('err');
+    return false;
+  }
+  document.getElementById(errId).textContent = '';
+  el.classList.remove('err');
+  return true;
+}
+
+function validate(step) {
+  let ok = true;
+  if (step === 1) {
+    if (!req('fullname','err-fullname','Full name is required')) ok = false;
+    if (!req('dob','err-dob','Date of birth required')) ok = false;
+    if (!req('gender','err-gender','Please select gender')) ok = false;
+    if (!req('nationality','err-nationality','Nationality required')) ok = false;
+    if (!req('phone','err-phone','Phone number required')) ok = false;
+    if (!req('email','err-email','Email required')) ok = false;
+    if (!req('bloodgroup','err-bloodgroup','Blood group required')) ok = false;
+    if (!req('ec-name','err-ec-name','Emergency contact name required')) ok = false;
+    if (!req('ec-phone','err-ec-phone','Emergency contact phone required')) ok = false;
+    if (ok) {
+      FD.fullname = v('fullname'); FD.dob = v('dob'); FD.gender = v('gender');
+      FD.nationality = v('nationality'); FD.phone = v('phone'); FD.email = v('email');
+      FD.bloodgroup = v('bloodgroup'); FD.allergies = v('allergies');
+      FD.ecName = v('ec-name'); FD.ecPhone = v('ec-phone'); FD.ecRelation = v('ec-relation');
+    }
+  }
+  if (step === 2) {
+    if (!req('doctype','err-doctype','Please select document type')) ok = false;
+    if (!req('docnum','err-docnum','Document number required')) ok = false;
+    if (!FD.docFront) {
+      document.getElementById('err-docs').textContent = 'Please upload the front of your document and selfie';
+      ok = false;
+    } else { document.getElementById('err-docs').textContent = ''; }
+    if (ok) { FD.docType = v('doctype'); FD.docNum = v('docnum'); }
+  }
+  if (step === 3) {
+    if (!req('regpoint','err-regpoint','Registration point required')) ok = false;
+    if (!req('checkin','err-checkin','Check-in date required')) ok = false;
+    if (!req('checkout','err-checkout','Check-out date required')) ok = false;
+    if (!req('primary-state','err-state','Please select primary state')) ok = false;
+    if (ok) {
+      FD.regpoint = v('regpoint'); FD.checkin = v('checkin'); FD.checkout = v('checkout');
+      FD.state = v('primary-state'); FD.hotel = v('hotel-name'); FD.insurance = document.getElementById('insurance-opt').checked;
+    }
+  }
+  return ok;
+}
+function v(id) { const e = document.getElementById(id); return e ? e.value : ''; }
+
+/* ── PHOTO ── */
+function handlePhoto(input) {
+  if (!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    FD.photo = e.target.result;
+    const prev = document.getElementById('photo-preview');
+    prev.src = e.target.result; prev.style.display = 'block';
+    document.getElementById('photo-icon').style.display = 'none';
+    document.getElementById('photo-text').textContent = '✓ Photo uploaded';
+    document.getElementById('photo-zone').classList.add('has');
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+/* ── DOCUMENT UPLOAD ── */
+function handleDoc(input, type) {
+  if (!input.files[0]) return;
+  const box = document.getElementById('dbox-'+type);
+  box.classList.add('done');
+  box.querySelector('.doc-box-icon').innerHTML = '<i class="fas fa-check"></i>';
+  const ds = document.getElementById('ds-'+type);
+  ds.textContent = '✓ Uploaded'; ds.className = 'doc-status ok';
+  FD['doc_'+type] = true;
+  if (type === 'front') FD.docFront = true;
+}
+function updateDocLabel() {
+  const map = {passport:'Passport Number', aadhar:'Aadhaar Number (12 digits)', license:'Licence Number', voter:'Voter ID Number'};
+  const v = document.getElementById('doctype').value;
+  document.getElementById('docnum-label').innerHTML = (map[v] || 'Document Number') + ' <span class="req">*</span>';
+}
+
+/* ── ITINERARY ── */
+function addDay() {
+  dayCount++;
+  const div = document.createElement('div');
+  div.className = 'day-card'; div.id = 'day-'+dayCount;
+  div.innerHTML = `
+    <div class="day-card-top">
+      <h5>Day ${dayCount}</h5>
+      <button class="remove-day" onclick="document.getElementById('day-${dayCount}').remove()"><i class="fas fa-trash"></i></button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Destination</label><input type="text" placeholder="e.g. Kaziranga National Park"></div>
+      <div class="form-group"><label>Date</label><input type="date"></div>
+      <div class="form-group fg-full"><label>Activity</label><input type="text" placeholder="Safari, trekking, sightseeing…"></div>
+    </div>`;
+  document.getElementById('itinerary-wrap').appendChild(div);
+}
+
+/* ── PIN NAVIGATION ── */
+function pinNext(el, idx) {
+  el.value = el.value.replace(/\D/g,'');
+  const all = document.querySelectorAll('.pin-d');
+  if (el.value && idx < all.length - 1) all[idx+1].focus();
+}
+
+/* ── REVIEW BUILD ── */
+function buildReview() {
+  document.getElementById('rv-personal').innerHTML = `
+    <div class="rv"><div class="rv-label">Full Name</div><div class="rv-value">${FD.fullname||'—'}</div></div>
+    <div class="rv"><div class="rv-label">Date of Birth</div><div class="rv-value">${FD.dob||'—'}</div></div>
+    <div class="rv"><div class="rv-label">Gender</div><div class="rv-value">${FD.gender||'—'}</div></div>
+    <div class="rv"><div class="rv-label">Nationality</div><div class="rv-value">${FD.nationality||'—'}</div></div>
+    <div class="rv"><div class="rv-label">Phone</div><div class="rv-value">${FD.phone||'—'}</div></div>
+    <div class="rv"><div class="rv-label">Blood Group</div><div class="rv-value">${FD.bloodgroup||'—'}</div></div>
+    <div class="rv"><div class="rv-label">Emergency Contact</div><div class="rv-value">${FD.ecName||'—'} · ${FD.ecPhone||'—'}</div></div>
+    <div class="rv"><div class="rv-label">Allergies</div><div class="rv-value">${FD.allergies||'None stated'}</div></div>`;
+  document.getElementById('rv-docs').innerHTML = `
+    <div class="rv"><div class="rv-label">Document Type</div><div class="rv-value">${FD.docType||'—'}</div></div>
+    <div class="rv"><div class="rv-label">Document Number</div><div class="rv-value">${FD.docNum||'—'}</div></div>
+    <div class="rv"><div class="rv-label">Front Uploaded</div><div class="rv-value" style="color:var(--emerald)">${FD.doc_front?'✓ Yes':'—'}</div></div>
+    <div class="rv"><div class="rv-label">Selfie Captured</div><div class="rv-value" style="color:var(--emerald)">${FD.doc_selfie?'✓ Yes':'—'}</div></div>`;
+  document.getElementById('rv-travel').innerHTML = `
+    <div class="rv"><div class="rv-label">Entry Point</div><div class="rv-value">${FD.regpoint||'—'}</div></div>
+    <div class="rv"><div class="rv-label">Check-In</div><div class="rv-value">${FD.checkin||'—'}</div></div>
+    <div class="rv"><div class="rv-label">Check-Out</div><div class="rv-value">${FD.checkout||'—'}</div></div>
+    <div class="rv"><div class="rv-label">Primary State</div><div class="rv-value">${FD.state||'—'}</div></div>
+    <div class="rv"><div class="rv-label">Hotel</div><div class="rv-value">${FD.hotel||'Not specified'}</div></div>
+    <div class="rv"><div class="rv-label">Micro-Insurance</div><div class="rv-value" style="color:${FD.insurance?'var(--emerald)':'var(--tx4)'}">${FD.insurance?'✓ Opted In':'Not selected'}</div></div>`;
+}
+
+/* ── SUBMIT ── */
+function submitForm() {
+  const setPins = [...document.querySelectorAll('#pin-set .pin-d')].map(d => d.value);
+  const cfmPins = [...document.querySelectorAll('#pin-confirm .pin-d')].map(d => d.value);
+  if (setPins.some(p => !p)) { document.getElementById('err-pin').textContent = 'Please enter a 4-digit PIN'; return; }
+  if (setPins.join('') !== cfmPins.join('')) { document.getElementById('err-pin').textContent = 'PINs do not match. Please re-enter.'; return; }
+  document.getElementById('err-pin').textContent = '';
+  FD.pin = setPins.join('');
+
+  // Show loading overlay
+  const ov = document.getElementById('loading');
+  ov.classList.add('show');
+
+  // Simulate processing steps
+  const steps = ['ls1','ls2','ls3','ls4'];
+  const msgs = ['Verifying KYC documents…','Minting Digital ID on Polygon…','Encrypting &amp; storing trip data…','Generating QR code…'];
+  let i = 0;
+  function nextStep() {
+    if (i > 0) {
+      document.getElementById(steps[i-1]).className = 'ls done';
+      document.getElementById(steps[i-1]).innerHTML = '<i class="fas fa-check-circle"></i> ' + msgs[i-1].replace('…','');
+    }
+    if (i < steps.length) {
+      document.getElementById(steps[i]).innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> ${msgs[i]}`;
+      i++; setTimeout(nextStep, 900);
+    } else {
+      setTimeout(showSuccess, 600);
+    }
+  }
+  nextStep();
+}
+
+/* ── SUCCESS ── */
+function showSuccess() {
+  document.getElementById('loading').classList.remove('show');
+
+  // Generate tourist ID
+  const stateCodes = {
+    'Assam':'AS','Meghalaya':'ME','Arunachal Pradesh':'AR','Nagaland':'NA',
+    'Manipur':'MN','Mizoram':'MI','Tripura':'TR','Sikkim':'SK','Goa':'GA',
+    'Kerala':'KL','Rajasthan':'RJ','Other':'IN'
+  };
+  const code = stateCodes[FD.state] || 'IN';
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const rand = Array.from({length:6}, () => chars[Math.floor(Math.random()*chars.length)]).join('');
+  const touristId = `STH-${code}-${rand}`;
+  FD.touristId = touristId;
+
+  // Hide form, show success
+  document.getElementById('step4').classList.remove('active');
+  const sc = document.getElementById('success-screen');
+  sc.style.display = 'block'; sc.classList.add('show', 'active');
+  window.scrollTo({top:0, behavior:'smooth'});
+
+  document.getElementById('successName').textContent = FD.fullname || 'Tourist';
+  document.getElementById('successId').textContent = touristId;
+  document.getElementById('validity-text').textContent = `Valid: ${FD.checkin||'Today'} → ${FD.checkout||'Trip end'}`;
+
+  // Show photo if uploaded
+  if (FD.photo) {
+    const img = document.getElementById('successImage');
+    img.src = FD.photo; img.style.display = 'block';
+  }
+
+  // Generate QR
+  const qrData = JSON.stringify({
+    id: touristId, name: FD.fullname, nationality: FD.nationality,
+    bloodGroup: FD.bloodgroup, allergies: FD.allergies || 'None',
+    hotel: FD.hotel || 'Not specified',
+    emergency: `${FD.ecName} — ${FD.ecPhone}`,
+    validity: `${FD.checkin} to ${FD.checkout}`,
+    verifiedBy: 'Saarthi · Polygon Blockchain'
+  });
+  QRCode.toCanvas(document.getElementById('qrCodeContainer'), qrData, {
+    width: 180, margin: 2,
+    color: { dark: '#1E3A8A', light: '#ffffff' }
+  });
+}
+
+function downloadID() {
+  alert('📄 In production, this generates a signed PDF ID card with your QR code, photo, and trip details.\n\nYour Digital ID: ' + (FD.touristId || 'STH-XX-XXXXXX'));
+}
+</script>
+</body>
+</html>

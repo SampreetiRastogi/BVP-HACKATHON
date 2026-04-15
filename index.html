@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saarthi — Smart Tourist Safety Monitoring System</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Noto+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ═══════════════════════════════════════
+       DESIGN SYSTEM — SAARTHI
+    ═══════════════════════════════════════ */
+    :root {
+      --navy:        #1E3A8A;
+      --navy-dark:   #162d6f;
+      --navy-mid:    #243d9a;
+      --navy-light:  #2d4ea8;
+      --saffron:     #F59E0B;
+      --saffron-lt:  #FCD34D;
+      --crimson:     #EF4444;
+      --crimson-dk:  #DC2626;
+      --emerald:     #10B981;
+      --emerald-dk:  #059669;
+      --amber:       #F59E0B;
+      --purple:      #7C3AED;
+
+      /* Surfaces */
+      --bg:          #F8FAFC;
+      --surface:     #FFFFFF;
+      --border:      #E2E8F0;
+      --border-lt:   #F1F5F9;
+
+      /* Text */
+      --tx-1:        #0F172A;
+      --tx-2:        #334155;
+      --tx-3:        #64748B;
+      --tx-4:        #94A3B8;
+
+      /* Dark mode surfaces */
+      --dk-bg:       #0F172A;
+      --dk-surface:  #1E293B;
+      --dk-surface2: #263445;
+      --dk-border:   rgba(255,255,255,0.08);
+      --dk-tx:       #E2E8F0;
+      --dk-tx2:      #94A3B8;
+
+      /* Tokens */
+      --radius:      16px;
+      --radius-sm:   8px;
+      --radius-lg:   24px;
+      --shadow:      0 4px 24px rgba(30,58,138,0.07);
+      --shadow-lg:   0 12px 40px rgba(30,58,138,0.14);
+      --transition:  all 0.3s cubic-bezier(0.4,0,0.2,1);
+      --font:        'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* ── DARK MODE ── */
+    body.dark {
+      --bg:       var(--dk-bg);
+      --surface:  var(--dk-surface);
+      --border:   var(--dk-border);
+      --tx-1:     var(--dk-tx);
+      --tx-2:     #CBD5E1;
+      --tx-3:     var(--dk-tx2);
+      --tx-4:     #64748B;
+      --shadow:   0 4px 24px rgba(0,0,0,0.3);
+      --shadow-lg:0 12px 40px rgba(0,0,0,0.4);
+    }
+
+    /* ── RESET ── */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--tx-1);
+      line-height: 1.7;
+      overflow-x: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* ── SCROLL PROGRESS ── */
+    .scroll-bar {
+      position: fixed; top:0; left:0; height:3px; width:0;
+      background: linear-gradient(90deg, var(--navy), var(--saffron));
+      z-index: 9999; transition: width 0.1s;
+    }
+
+    /* ═══════════════════════
+       HEADER
+    ═══════════════════════ */
+    header {
+      position: fixed; top:0; left:0; right:0; z-index: 1000;
+      background: rgba(248,250,252,0.88);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      transition: var(--transition);
+    }
+    body.dark header { background: rgba(15,23,42,0.88); }
+    .header-inner {
+      max-width: 1280px; margin: 0 auto;
+      padding: 0 24px; height: 68px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px; text-decoration: none;
+    }
+    .logo-img {
+      width: 40px; height: 40px; border-radius: 10px; object-fit: contain;
+      background: linear-gradient(135deg,var(--navy),var(--navy-light));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; font-weight: 900; color: #fff; overflow: hidden;
+    }
+    .logo-img img { width: 100%; height: 100%; object-fit: contain; }
+    .logo-text {
+      font-size: 1.45rem; font-weight: 800; color: var(--navy); letter-spacing: -0.5px;
+    }
+    body.dark .logo-text { color: #fff; }
+    .logo-text span { color: var(--saffron); }
+
+    nav { display: flex; align-items: center; gap: 4px; }
+    nav a {
+      font-size: 0.875rem; font-weight: 500; color: var(--tx-2);
+      text-decoration: none; padding: 8px 13px; border-radius: 8px;
+      transition: var(--transition);
+    }
+    body.dark nav a { color: var(--dk-tx2); }
+    nav a:hover { background: #EFF6FF; color: var(--navy); }
+    body.dark nav a:hover { background: rgba(30,58,138,0.25); color: #fff; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 9px 18px; border-radius: 10px;
+      font-weight: 600; font-size: 0.875rem;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: var(--transition); font-family: var(--font);
+    }
+    .btn-primary { background: var(--navy); color: #fff; }
+    .btn-primary:hover { background: var(--navy-dark); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(30,58,138,0.3); }
+    .btn-danger  { background: var(--crimson); color: #fff; animation: pulse-btn 2s infinite; }
+    .btn-danger:hover { background: var(--crimson-dk); transform: translateY(-1px); }
+    .btn-saffron { background: var(--saffron); color: #fff; }
+    .btn-saffron:hover { background: #d97706; transform: translateY(-1px); }
+    .btn-outline { background: transparent; color: var(--navy); border: 1.5px solid var(--navy); }
+    .btn-outline:hover { background: var(--navy); color: #fff; }
+    .btn-lg { padding: 13px 26px; font-size: 1rem; border-radius: 12px; }
+
+    @keyframes pulse-btn {
+      0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+      50%      { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
+    }
+
+    .theme-btn {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: var(--border-lt); border: 1px solid var(--border);
+      color: var(--tx-3); cursor: pointer; font-size: 0.9rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: var(--transition);
+    }
+    .theme-btn:hover { background: var(--navy); color: #fff; }
+
+    /* Hamburger */
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      cursor: pointer; padding: 6px; background: none; border: none;
+    }
+    .hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--tx-1); border-radius: 2px; transition: var(--transition);
+    }
+    body.dark .hamburger span { background: #fff; }
+
+    /* Mobile nav */
+    @media (max-width: 900px) {
+      nav {
+        display: none; position: fixed; top: 68px; left: 0; right: 0;
+        background: var(--surface); border-bottom: 1px solid var(--border);
+        flex-direction: column; padding: 16px; gap: 4px; z-index: 999;
+      }
+      nav.open { display: flex; }
+      nav a { width: 100%; }
+      .hamburger { display: flex; }
+    }
+
+    /* ═══════════════════════
+       HERO
+    ═══════════════════════ */
+    .hero {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0B1534 0%, #1E3A8A 55%, #162d6f 100%);
+      display: flex; align-items: center;
+      position: relative; overflow: hidden; padding-top: 68px;
+    }
+    .hero-orbs { position: absolute; inset: 0; pointer-events: none; }
+    .orb {
+      position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.12;
+    }
+    .orb1 { width:550px;height:550px;background:var(--saffron);top:-120px;right:-120px; }
+    .orb2 { width:420px;height:420px;background:#3b82f6;bottom:-80px;left:-80px; }
+    .orb3 { width:300px;height:300px;background:var(--emerald);top:45%;left:45%; }
+    .hero-grid-bg {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 52px 52px;
+    }
+
+    .hero-content {
+      max-width: 1280px; margin: 0 auto; padding: 80px 24px 80px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 64px;
+      align-items: center; position: relative; z-index: 1;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(245,158,11,0.12);
+      border: 1px solid rgba(245,158,11,0.25);
+      color: var(--saffron-lt); padding: 5px 14px; border-radius: 50px;
+      font-size: 0.78rem; font-weight: 600; margin-bottom: 22px;
+      letter-spacing: 0.3px;
+    }
+    .hero h1 {
+      font-size: clamp(2.4rem, 4.5vw, 3.8rem);
+      font-weight: 800; color: #fff; line-height: 1.16;
+      letter-spacing: -1.5px; margin-bottom: 20px;
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--saffron), var(--saffron-lt));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: 1.05rem; color: rgba(255,255,255,0.68);
+      margin-bottom: 34px; line-height: 1.85; max-width: 520px;
+    }
+    .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    /* Hero phone mockup */
+    .hero-mockup {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 28px; padding: 24px;
+      backdrop-filter: blur(16px);
+    }
+    .mockup-top {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 20px;
+    }
+    .m-brand { font-size: 0.9rem; font-weight: 800; color: #fff; }
+    .m-time  { font-size: 0.7rem; color: rgba(255,255,255,0.45); }
+    .m-trip  {
+      font-size: 0.65rem; background: rgba(16,185,129,0.15);
+      color: #34d399; padding: 3px 10px; border-radius: 50px;
+      border: 1px solid rgba(16,185,129,0.2); font-weight: 600;
+    }
+
+    /* Safety score ring */
+    .score-ring { width: 120px; height: 120px; margin: 0 auto 18px; position: relative; }
+    .score-ring svg { transform: rotate(-90deg); }
+    .r-bg  { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 8; }
+    .r-fill{ fill: none; stroke: var(--emerald); stroke-width: 8;
+             stroke-dasharray: 339; stroke-dashoffset: 68;
+             stroke-linecap: round; transition: stroke-dashoffset 2s ease; }
+    .score-center {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .s-num   { font-size: 1.9rem; font-weight: 800; color: #fff; line-height: 1; }
+    .s-label { font-size: 0.6rem; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+    /* Mockup mini cards */
+    .m-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .m-card  {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px; padding: 10px;
+    }
+    .m-ci { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; margin-bottom: 6px; }
+    .ci-b { background: rgba(59,130,246,0.2); color: #60a5fa; }
+    .ci-g { background: rgba(16,185,129,0.2); color: #34d399; }
+    .ci-r { background: rgba(239,68,68,0.2); color: #f87171; }
+    .ci-a { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .m-ct { font-size: 0.68rem; font-weight: 600; color: rgba(255,255,255,0.8); }
+    .m-cs { font-size: 0.6rem; color: rgba(255,255,255,0.38); }
+
+    /* SOS strip */
+    .m-sos {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 10px; padding: 10px; display: flex;
+      align-items: center; gap: 10px; margin-top: 8px;
+    }
+    .m-sos-btn {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: var(--crimson); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 800; flex-shrink: 0;
+    }
+    .m-sos-txt { font-size: 0.68rem; color: rgba(255,255,255,0.65); }
+    .m-sos-txt strong { display: block; color: #fff; margin-bottom: 1px; }
+
+    /* Hero stats */
+    .hero-stats {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 16px; margin-top: 44px; padding-top: 32px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .hs-num { font-size: 1.7rem; font-weight: 800; color: #fff; }
+    .hs-label { font-size: 0.75rem; color: rgba(255,255,255,0.45); margin-top: 2px; }
+
+    /* ═══════════════════════
+       GENERIC SECTION
+    ═══════════════════════ */
+    section { padding: 96px 0; }
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+    .s-eyebrow {
+      display: inline-block; font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--navy); background: #EFF6FF;
+      padding: 4px 13px; border-radius: 50px; margin-bottom: 14px;
+    }
+    body.dark .s-eyebrow { background: rgba(30,58,138,0.3); color: #93c5fd; }
+    .s-title {
+      font-size: clamp(1.9rem, 3.2vw, 2.7rem); font-weight: 800;
+      letter-spacing: -1px; color: var(--tx-1); margin-bottom: 14px; line-height: 1.2;
+    }
+    .s-title em { font-style: normal; color: var(--navy); }
+    body.dark .s-title em { color: #93c5fd; }
+    .s-sub {
+      font-size: 1.05rem; color: var(--tx-3); line-height: 1.8; max-width: 620px;
+    }
+    .s-head { text-align: center; margin-bottom: 56px; }
+    .s-head .s-sub { margin: 0 auto; }
+
+    /* ═══════════════════════
+       SAFETY SCORE SECTION
+    ═══════════════════════ */
+    #safety-score {
+      background: linear-gradient(135deg, rgba(30,58,138,0.04), rgba(16,185,129,0.04));
+    }
+    .score-layout {
+      display: grid; grid-template-columns: auto 1fr; gap: 64px; align-items: center;
+    }
+    .score-big {
+      width: 220px; height: 220px; border-radius: 50%;
+      background: conic-gradient(var(--navy) 80%, var(--border) 0%);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: var(--shadow-lg); flex-shrink: 0;
+    }
+    .score-inner {
+      width: 178px; height: 178px; border-radius: 50%;
+      background: var(--surface);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .score-val { font-size: 3rem; font-weight: 800; color: var(--navy); line-height: 1; }
+    .score-sub { font-size: 0.8rem; color: var(--tx-3); margin-top: 4px; }
+    .score-feats {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+    }
+    .sf-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px;
+      transition: var(--transition);
+    }
+    .sf-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+    .sf-icon {
+      width: 44px; height: 44px; border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; margin-bottom: 12px;
+    }
+    .i-navy   { background: #EFF6FF; color: var(--navy); }
+    .i-saffron{ background: #FFFBEB; color: var(--saffron); }
+    .i-emerald{ background: #ECFDF5; color: var(--emerald); }
+    .i-crimson{ background: #FEF2F2; color: var(--crimson); }
+    .i-purple { background: #F5F3FF; color: var(--purple); }
+    .i-teal   { background: #F0FDFA; color: #0D9488; }
+    .sf-card h4 { font-size: 0.95rem; font-weight: 700; color: var(--tx-1); margin-bottom: 5px; }
+    .sf-card p  { font-size: 0.82rem; color: var(--tx-3); line-height: 1.7; }
+
+    /* ═══════════════════════
+       STATS BAND
+    ═══════════════════════ */
+    .stats-band {
+      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+      padding: 64px 0;
+    }
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(4,1fr); gap: 32px; text-align: center;
+    }
+    .stat-item h4 { font-size: 3rem; font-weight: 800; color: #fff; margin-bottom: 8px; }
+    .stat-item p  { font-size: 0.9rem; color: rgba(255,255,255,0.65); }
+
+    /* ═══════════════════════
+       FEATURES
+    ═══════════════════════ */
+    #features { background: var(--surface); }
+    body.dark #features { background: var(--dk-surface); }
+    .feat-grid {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 24px;
+    }
+    .feat-card {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 28px 24px;
+      transition: var(--transition); position: relative; overflow: hidden;
+    }
+    body.dark .feat-card { background: var(--dk-surface); border-color: var(--dk-border); }
+    .feat-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--navy), var(--saffron));
+      transform: scaleX(0); transform-origin: left; transition: var(--transition);
+    }
+    .feat-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); border-color: rgba(30,58,138,0.2); }
+    .feat-card:hover::before { transform: scaleX(1); }
+    .feat-num {
+      position: absolute; top: 18px; right: 20px;
+      font-size: 3.5rem; font-weight: 900; color: rgba(30,58,138,0.04); line-height: 1;
+    }
+    body.dark .feat-num { color: rgba(255,255,255,0.03); }
+    .feat-icon {
+      width: 52px; height: 52px; border-radius: 13px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; margin-bottom: 18px;
+    }
+    .feat-card h4 { font-size: 1.05rem; font-weight: 700; color: var(--tx-1); margin-bottom: 8px; }
+    .feat-card p  { font-size: 0.87rem; color: var(--tx-3); line-height: 1.8; }
+
+    /* ═══════════════════════
+       HOW IT WORKS
+    ═══════════════════════ */
+    #how-it-works { background: linear-gradient(135deg, #EFF6FF, #F0FDF4); }
+    body.dark #how-it-works { background: linear-gradient(135deg, rgba(30,58,138,0.15), rgba(16,185,129,0.1)); }
+    .steps-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; position: relative;
+    }
+    .steps-grid::before {
+      content: ''; position: absolute; top: 44px; left: 16.5%; right: 16.5%;
+      height: 2px; background: linear-gradient(90deg, var(--navy), var(--saffron));
+    }
+    .step {
+      text-align: center; padding: 16px; position: relative; z-index: 1;
+    }
+    .step-num {
+      width: 88px; height: 88px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--navy), var(--navy-light));
+      color: #fff; font-size: 1.5rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px; box-shadow: 0 8px 24px rgba(30,58,138,0.3);
+      position: relative;
+    }
+    .step-num .step-badge {
+      position: absolute; top: -4px; right: -4px;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--saffron); color: #fff;
+      font-size: 0.6rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .step h4 { font-size: 1rem; font-weight: 700; color: var(--tx-1); margin-bottom: 8px; }
+    .step p  { font-size: 0.85rem; color: var(--tx-3); line-height: 1.75; }
+
+    /* ═══════════════════════
+       IOT SECTION
+    ═══════════════════════ */
+    #iot { background: var(--bg); }
+    .iot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+    .iot-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 36px 28px; text-align: center;
+      transition: var(--transition);
+    }
+    body.dark .iot-card { background: var(--dk-surface); border-color: var(--dk-border); }
+    .iot-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); border-color: var(--navy); }
+    .iot-ico {
+      width: 90px; height: 90px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--navy), var(--navy-light));
+      color: #fff; font-size: 2.2rem;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 22px; box-shadow: 0 10px 28px rgba(30,58,138,0.25);
+    }
+    .iot-card h4 { font-size: 1.2rem; font-weight: 700; color: var(--navy); margin-bottom: 12px; }
+    .iot-card p  { font-size: 0.9rem; color: var(--tx-3); line-height: 1.75; }
+
+    /* ═══════════════════════
+       ADVANCED FEATURES (new)
+    ═══════════════════════ */
+    #advanced { background: var(--surface); }
+    body.dark #advanced { background: var(--dk-surface); }
+    .adv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .adv-card {
+      border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+    }
+    body.dark .adv-card { border-color: var(--dk-border); }
+    .adv-head {
+      padding: 22px 26px; display: flex; align-items: flex-start; gap: 14px;
+    }
+    .adv-icon {
+      width: 46px; height: 46px; border-radius: 11px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+    }
+    .adv-head h4 { font-size: 1rem; font-weight: 700; color: var(--tx-1); margin-bottom: 5px; }
+    .adv-head p  { font-size: 0.82rem; color: var(--tx-3); line-height: 1.65; }
+    .adv-body { padding: 0 26px 22px; }
+    .tech-tag {
+      display: inline-block; font-size: 0.68rem; font-weight: 600;
+      padding: 3px 9px; border-radius: 50px; margin: 3px 2px;
+    }
+    .tt-blue   { background: #DBEAFE; color: #1D4ED8; }
+    .tt-purple { background: #EDE9FE; color: #6D28D9; }
+    .tt-green  { background: #D1FAE5; color: #065F46; }
+    .tt-amber  { background: #FEF3C7; color: #92400E; }
+    body.dark .tt-blue   { background: rgba(59,130,246,0.15); color: #93c5fd; }
+    body.dark .tt-purple { background: rgba(124,58,237,0.15); color: #c4b5fd; }
+    body.dark .tt-green  { background: rgba(16,185,129,0.15); color: #6ee7b7; }
+    body.dark .tt-amber  { background: rgba(245,158,11,0.15); color: #fcd34d; }
+    .wow-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: linear-gradient(135deg, var(--navy), var(--saffron));
+      color: #fff; font-size: 0.68rem; font-weight: 700;
+      padding: 4px 11px; border-radius: 50px; margin-top: 10px;
+    }
+
+    /* ═══════════════════════
+       LANGUAGES
+    ═══════════════════════ */
+    #languages { background: var(--border-lt); }
+    body.dark #languages { background: var(--dk-surface2); }
+    .lang-selector {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      justify-content: center; margin-bottom: 48px;
+    }
+    .lang-btn {
+      padding: 8px 18px; border-radius: 50px;
+      border: 1.5px solid var(--border); background: var(--surface);
+      font-size: 0.875rem; font-weight: 600; color: var(--tx-2);
+      cursor: pointer; transition: var(--transition); font-family: var(--font);
+    }
+    .lang-btn:hover, .lang-btn.active {
+      background: var(--navy); color: #fff; border-color: var(--navy);
+      transform: translateY(-2px);
+    }
+    body.dark .lang-btn { background: var(--dk-surface); border-color: var(--dk-border); color: var(--dk-tx2); }
+    body.dark .lang-btn:hover, body.dark .lang-btn.active { background: var(--navy); color: #fff; }
+    .lang-feats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 0;
+    }
+    .lf-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px; text-align: center;
+      transition: var(--transition);
+    }
+    body.dark .lf-card { background: var(--dk-surface); border-color: var(--dk-border); }
+    .lf-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+    .lf-card i { font-size: 1.6rem; color: var(--navy); margin-bottom: 12px; }
+    .lf-card h4 { font-size: 0.95rem; font-weight: 700; color: var(--tx-1); margin-bottom: 6px; }
+    .lf-card p  { font-size: 0.82rem; color: var(--tx-3); }
+
+    /* ═══════════════════════
+       DASHBOARD PREVIEW
+    ═══════════════════════ */
+    #dashboard {
+      background: linear-gradient(135deg, #0F172A, #1E293B);
+    }
+    #dashboard .s-eyebrow { background: rgba(245,158,11,0.15); color: var(--saffron-lt); }
+    #dashboard .s-title { color: #fff; }
+    #dashboard .s-title em { color: var(--saffron); }
+    #dashboard .s-sub  { color: rgba(255,255,255,0.55); }
+    .dash-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 20px; margin-top: 44px; }
+    .dash-card {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: var(--radius-lg); padding: 24px;
+      transition: var(--transition);
+    }
+    .dash-card:hover { background: rgba(255,255,255,0.07); border-color: rgba(245,158,11,0.25); }
+    .dash-card-top { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .dc-icon {
+      width: 42px; height: 42px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 1rem;
+    }
+    .dc-b { background: rgba(59,130,246,0.2); color: #60a5fa; }
+    .dc-g { background: rgba(16,185,129,0.2); color: #34d399; }
+    .dc-a { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .dc-r { background: rgba(239,68,68,0.2);  color: #f87171; }
+    .dash-card h4 { font-size: 0.95rem; font-weight: 700; color: #fff; }
+    .dash-card p  { font-size: 0.82rem; color: rgba(255,255,255,0.48); line-height: 1.7; margin-bottom: 12px; }
+    .dash-vis {
+      height: 88px; background: rgba(255,255,255,0.03);
+      border-radius: 8px; display: flex; align-items: center;
+      justify-content: center; overflow: hidden; position: relative; margin-bottom: 12px;
+    }
+    .hspot { position: absolute; border-radius: 50%; filter: blur(16px); }
+    .hs1 { width:60px;height:60px;background:rgba(239,68,68,0.55);top:10%;left:28%; }
+    .hs2 { width:45px;height:45px;background:rgba(245,158,11,0.5);top:40%;left:58%; }
+    .hs3 { width:35px;height:35px;background:rgba(239,68,68,0.4);top:20%;left:68%; }
+    .ds-stats { display: flex; gap: 16px; }
+    .ds-stat  { font-size: 0.75rem; color: rgba(255,255,255,0.45); display:flex;align-items:center;gap:5px; }
+    .ds-stat i { color: var(--saffron); }
+    .live-pip { width:8px;height:8px;border-radius:50%;background:var(--emerald);animation:pip 1.4s infinite; margin-left: auto; }
+    @keyframes pip { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+    .ring-anim { animation: ring-b 2s infinite; transform-origin:center top; }
+    @keyframes ring-b {
+      0%,100%{transform:rotate(0);}10%{transform:rotate(14deg);}20%{transform:rotate(-11deg);}
+      30%{transform:rotate(9deg);}40%{transform:rotate(-7deg);}50%{transform:rotate(0);}
+    }
+
+    /* ═══════════════════════
+       SOS CTA
+    ═══════════════════════ */
+    .sos-section {
+      background: linear-gradient(135deg, #450A0A, #7F1D1D);
+      padding: 80px 0; text-align: center; position: relative; overflow: hidden;
+    }
+    .sos-ripples { position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none; }
+    .sos-ripple { position:absolute;border-radius:50%;border:1px solid rgba(239,68,68,0.12); }
+    .r1{width:220px;height:220px;}
+    .r2{width:380px;height:380px;}
+    .r3{width:560px;height:560px;}
+    .sos-section h2 { font-size: 2.4rem; font-weight: 800; color: #fff; margin-bottom: 10px; position:relative; }
+    .sos-section > .container > p { color: rgba(255,255,255,0.65); margin-bottom: 36px; font-size: 1.05rem; position:relative; }
+    .sos-big {
+      width: 130px; height: 130px; border-radius: 50%;
+      background: var(--crimson); border: 4px solid rgba(255,255,255,0.15);
+      color: #fff; cursor: pointer; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 5px;
+      margin: 0 auto 48px; position: relative; z-index: 1;
+      font-family: var(--font); font-size: 0.82rem; font-weight: 800;
+      animation: pulse-sos 2s infinite;
+    }
+    .sos-big i { font-size: 1.9rem; }
+    @keyframes pulse-sos {
+      0%   { box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
+      70%  { box-shadow: 0 0 0 28px rgba(239,68,68,0); }
+      100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+    }
+    .sos-meta { display:flex;justify-content:center;gap:36px;position:relative; }
+    .sos-m-item { text-align:center; }
+    .sos-m-item i { font-size:1.3rem;color:rgba(255,255,255,0.45);margin-bottom:6px;display:block; }
+    .sos-m-item strong { display:block;color:#fff;font-size:0.9rem;margin-bottom:3px; }
+    .sos-m-item span   { font-size:0.75rem;color:rgba(255,255,255,0.5); }
+
+    /* ═══════════════════════
+       FOOTER
+    ═══════════════════════ */
+    footer { background: #0B1225; padding: 60px 0 28px; }
+    .foot-grid { display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px; }
+    .foot-brand .logo-text { color: #fff; font-size: 1.4rem; }
+    .foot-brand p { font-size:0.85rem;color:rgba(255,255,255,0.42);margin:10px 0 18px;line-height:1.8; }
+    .social-row { display:flex;gap:8px; }
+    .soc { width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.45);text-decoration:none;transition:var(--transition);font-size:0.8rem; }
+    .soc:hover { background:var(--navy);color:#fff; }
+    .foot-col h5 { font-size:0.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:14px; }
+    .foot-col a  { display:block;font-size:0.85rem;color:rgba(255,255,255,0.45);text-decoration:none;margin-bottom:9px;transition:var(--transition); }
+    .foot-col a:hover { color:#fff; }
+    .foot-bottom { border-top:1px solid rgba(255,255,255,0.06);padding-top:22px;display:flex;justify-content:space-between;align-items:center; }
+    .foot-bottom p { font-size:0.78rem;color:rgba(255,255,255,0.25); }
+
+    /* ═══════════════════════
+       CHATBOT
+    ═══════════════════════ */
+    #chatbot-icon {
+      position:fixed;bottom:28px;right:28px;z-index:900;
+      width:58px;height:58px;border-radius:50%;
+      background:var(--navy);color:#fff;
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.3rem;cursor:pointer;
+      box-shadow:0 8px 24px rgba(30,58,138,0.4);
+      transition:var(--transition);border:none;
+    }
+    #chatbot-icon:hover { transform:scale(1.1); }
+    #chatbot-container {
+      position:fixed;bottom:100px;right:28px;width:350px;height:470px;
+      background:var(--surface);border:1px solid var(--border);
+      border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.18);
+      display:none;flex-direction:column;overflow:hidden;z-index:900;
+    }
+    #chatbot-container.active { display:flex; }
+    .cb-head {
+      background:linear-gradient(135deg,var(--navy),var(--navy-light));
+      padding:14px 18px;display:flex;align-items:center;gap:10px;
+    }
+    .cb-av {
+      width:36px;height:36px;border-radius:50%;
+      background:rgba(255,255,255,0.18);
+      display:flex;align-items:center;justify-content:center;font-size:0.9rem;color:#fff;
+    }
+    .cb-info h5 { font-size:0.9rem;font-weight:700;color:#fff; }
+    .cb-info p  { font-size:0.68rem;color:rgba(255,255,255,0.65); }
+    #chatbot-toggle { margin-left:auto;background:none;border:none;color:rgba(255,255,255,0.65);cursor:pointer;font-size:1rem; }
+    #chatbot-messages { flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px; }
+    .message { max-width:82%; }
+    .message.bot  { align-self:flex-start; }
+    .message.user { align-self:flex-end; }
+    .bubble {
+      padding:10px 13px;border-radius:12px;font-size:0.83rem;line-height:1.6;
+    }
+    .bot  .bubble { background:#F1F5F9;color:var(--tx-1);border-bottom-left-radius:3px; }
+    body.dark .bot .bubble { background:var(--dk-surface2);color:var(--dk-tx); }
+    .user .bubble { background:var(--navy);color:#fff;border-bottom-right-radius:3px; }
+    .message-time { font-size:0.62rem;opacity:0.5;margin-top:4px;text-align:right; }
+    .typing-indicator { display:none;align-self:flex-start;padding:8px 12px;background:#F1F5F9;border-radius:12px;border-bottom-left-radius:3px;gap:4px; }
+    body.dark .typing-indicator { background:var(--dk-surface2); }
+    .typing-indicator span { width:6px;height:6px;background:var(--tx-3);border-radius:50%;animation:bounce 1.3s infinite; }
+    .typing-indicator span:nth-child(2){animation-delay:0.2s;}
+    .typing-indicator span:nth-child(3){animation-delay:0.4s;}
+    @keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+    #quick-suggestions { display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 10px; }
+    .suggestion-chip {
+      background:#EFF6FF;border:1px solid #BFDBFE;color:var(--navy);
+      font-size:0.7rem;font-weight:600;padding:4px 10px;border-radius:50px;
+      cursor:pointer;transition:var(--transition);
+    }
+    .suggestion-chip:hover { background:var(--navy);color:#fff; }
+    body.dark .suggestion-chip { background:rgba(30,58,138,0.25);border-color:rgba(30,58,138,0.4);color:#93c5fd; }
+    #chatbot-input {
+      display:flex;gap:8px;padding:12px 14px;
+      border-top:1px solid var(--border);
+    }
+    #chatbot-input input {
+      flex:1;border:1px solid var(--border);border-radius:8px;
+      padding:8px 11px;font-size:0.83rem;font-family:var(--font);outline:none;
+      background:var(--bg);color:var(--tx-1);
+    }
+    #chatbot-input input:focus { border-color:var(--navy); }
+    #send-button, #mic-button {
+      width:34px;height:34px;border-radius:8px;border:none;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;font-size:0.82rem;
+      transition:var(--transition);
+    }
+    #send-button { background:var(--navy);color:#fff; }
+    #mic-button  { background:var(--border-lt);color:var(--tx-3); }
+    #mic-button:hover { background:var(--emerald);color:#fff; }
+
+    /* ═══════════════════════
+       EMERGENCY MODAL
+    ═══════════════════════ */
+    .modal {
+      position:fixed;inset:0;background:rgba(0,0,0,0.7);
+      z-index:2000;display:none;align-items:center;justify-content:center;
+      backdrop-filter:blur(5px);
+    }
+    .modal.active { display:flex; }
+    .modal-content {
+      background:var(--surface);border-radius:20px;padding:38px;
+      max-width:440px;width:90%;text-align:center;
+      animation:pop-in 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes pop-in { from{transform:scale(0.8);opacity:0;} to{transform:scale(1);opacity:1;} }
+    .modal-icon {
+      width:72px;height:72px;border-radius:50%;background:#FEF2F2;
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.9rem;color:var(--crimson);margin:0 auto 18px;
+    }
+    .modal-content h3 { font-size:1.3rem;font-weight:800;color:var(--tx-1);margin-bottom:10px; }
+    .modal-content p  { font-size:0.88rem;color:var(--tx-3);margin-bottom:8px;line-height:1.7; }
+    .modal-content ul { text-align:left;padding-left:20px;color:var(--tx-3);font-size:0.85rem;margin:14px 0; }
+    .modal-content ul li { margin-bottom:6px; }
+    .modal-buttons { display:flex;gap:12px;justify-content:center;margin-top:22px; }
+
+    /* ═══════════════════════
+       FADE ANIMATIONS
+    ═══════════════════════ */
+    .fade-in { opacity:0;transform:translateY(28px);transition:opacity 0.65s ease,transform 0.65s ease; }
+    .fade-in.visible { opacity:1;transform:translateY(0); }
+
+    /* ═══════════════════════
+       RESPONSIVE
+    ═══════════════════════ */
+    @media(max-width:1024px){
+      .hero-content   { grid-template-columns:1fr; }
+      .hero-mockup    { display:none; }
+      .score-layout   { grid-template-columns:1fr; }
+      .score-big      { margin:0 auto; }
+      .feat-grid      { grid-template-columns:repeat(2,1fr); }
+      .stats-grid     { grid-template-columns:repeat(2,1fr); }
+      .adv-grid       { grid-template-columns:1fr; }
+      .iot-grid       { grid-template-columns:repeat(2,1fr); }
+      .foot-grid      { grid-template-columns:1fr 1fr; }
+    }
+    @media(max-width:640px){
+      .feat-grid      { grid-template-columns:1fr; }
+      .steps-grid     { grid-template-columns:1fr; }
+      .steps-grid::before { display:none; }
+      .iot-grid       { grid-template-columns:1fr; }
+      .lang-feats     { grid-template-columns:1fr; }
+      .dash-grid      { grid-template-columns:1fr; }
+      .sos-meta       { flex-direction:column;gap:20px;align-items:center; }
+      .foot-grid      { grid-template-columns:1fr; }
+      .foot-bottom    { flex-direction:column;gap:10px;text-align:center; }
+      .score-feats    { grid-template-columns:1fr; }
+      #chatbot-container { width:calc(100vw - 40px);right:20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SCROLL PROGRESS -->
+<div class="scroll-bar" id="scroll-bar"></div>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<header id="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-img">
+        <img src="saarthi_logo.png" alt="Saarthi" onerror="this.parentElement.textContent='S'">
+      </div>
+      <span class="logo-text">SAAR<span>THI</span></span>
+    </a>
+
+    <nav id="main-nav">
+      <a href="#features"    class="active">Features</a>
+      <a href="#safety-score">Safety Score</a>
+      <a href="transport.html">Transport</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="register.html" class="btn btn-primary">
+        <i class="fas fa-user-plus"></i>Register
+      </a>
+      <a href="emergency.html" class="btn btn-danger">
+        <i class="fas fa-shield-alt"></i>Emergency
+      </a>
+    </nav>
+
+    <div style="display:flex;align-items:center;gap:8px;">
+      <button class="theme-btn" id="theme-toggle" title="Toggle dark mode">
+        <i class="fas fa-moon"></i>
+      </button>
+      <button class="hamburger" id="ham-btn" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero" id="main-content">
+  <div class="hero-orbs">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+  </div>
+  <div class="hero-grid-bg"></div>
+
+  <div class="hero-content">
+    <!-- LEFT -->
+    <div class="hero-left">
+      <div class="hero-badge"><i class="fas fa-shield-alt"></i> India's #1 Tourist Safety Platform</div>
+      <h1>Smart Tourist<br>Safety Monitoring<br><em>Powered by AI & Blockchain</em></h1>
+      <p class="hero-sub">
+        Blockchain-secured Digital IDs, real-time AI monitoring, zero-connectivity SOS,
+        geo-fencing alerts, and predictive crowd forecasting — Saarthi guards you across
+        every corner of Incredible India.
+      </p>
+      <div class="hero-ctas">
+        <a href="register.html" class="btn btn-saffron btn-lg">
+          <i class="fas fa-user-plus"></i> Register as Tourist
+        </a>
+        <a href="emergency.html" class="btn btn-danger btn-lg">
+          <i class="fas fa-exclamation-triangle"></i> Emergency Alert
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div><div class="hs-num">24/7</div><div class="hs-label">Round-the-clock monitoring</div></div>
+        <div><div class="hs-num">15+</div><div class="hs-label">Indian languages</div></div>
+        <div><div class="hs-num">250K+</div><div class="hs-label">Tourists secured</div></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: PHONE MOCKUP -->
+    <div class="hero-right">
+      <div class="hero-mockup fade-in">
+        <div class="mockup-top">
+          <span class="m-brand">SAARTHI</span>
+          <span class="m-trip">Active Trip</span>
+          <span class="m-time">9:41 AM</span>
+        </div>
+        <div class="score-ring">
+          <svg viewBox="0 0 120 120" width="120" height="120">
+            <circle class="r-bg" cx="60" cy="60" r="54"/>
+            <circle class="r-fill" cx="60" cy="60" r="54"/>
+          </svg>
+          <div class="score-center">
+            <span class="s-num">87</span>
+            <span class="s-label">Safety Score</span>
+          </div>
+        </div>
+        <div class="m-cards">
+          <div class="m-card">
+            <div class="m-ci ci-b"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="m-ct">Kaziranga NP</div>
+            <div class="m-cs">Safe zone ✓</div>
+          </div>
+          <div class="m-card">
+            <div class="m-ci ci-g"><i class="fas fa-hospital"></i></div>
+            <div class="m-ct">Hospital</div>
+            <div class="m-cs">2.3 km away</div>
+          </div>
+          <div class="m-card">
+            <div class="m-ci ci-a"><i class="fas fa-qrcode"></i></div>
+            <div class="m-ct">Digital ID</div>
+            <div class="m-cs">STH-AS-X7K9P2</div>
+          </div>
+          <div class="m-card">
+            <div class="m-ci ci-r"><i class="fas fa-shield-alt"></i></div>
+            <div class="m-ct">Geo-fence</div>
+            <div class="m-cs">All clear</div>
+          </div>
+        </div>
+        <div class="m-sos">
+          <div class="m-sos-btn">SOS</div>
+          <div class="m-sos-txt">
+            <strong>Emergency? Press &amp; Hold</strong>
+            Alerts police + contacts instantly
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SAFETY SCORE ═══════════ -->
+<section id="safety-score">
+  <div class="container">
+    <div class="s-head fade-in">
+      <span class="s-eyebrow">AI-Powered</span>
+      <h2 class="s-title">Real-Time <em>Safety Score</em></h2>
+      <p class="s-sub">Our advanced AI continuously monitors multiple safety factors to give you a live, personalised safety score — helping you travel smarter and safer.</p>
+    </div>
+    <div class="score-layout">
+      <div class="score-big fade-in">
+        <div class="score-inner">
+          <span class="score-val">87</span>
+          <span class="score-sub">Safety Score</span>
+        </div>
+      </div>
+      <div class="score-feats">
+        <div class="sf-card fade-in">
+          <div class="sf-icon i-navy"><i class="fas fa-map-marker-alt"></i></div>
+          <h4>Location Analysis</h4>
+          <p>Real-time assessment of your current location's safety rating based on crime data and local conditions.</p>
+        </div>
+        <div class="sf-card fade-in">
+          <div class="sf-icon i-saffron"><i class="fas fa-clock"></i></div>
+          <h4>Time-Based Monitoring</h4>
+          <p>Safety score adjustments based on time of day, local night-time patterns, and event calendars.</p>
+        </div>
+        <div class="sf-card fade-in">
+          <div class="sf-icon i-emerald"><i class="fas fa-hospital"></i></div>
+          <h4>Emergency Proximity</h4>
+          <p>Distance to nearest hospitals, police stations, and verified safe zones calculated continuously.</p>
+        </div>
+        <div class="sf-card fade-in">
+          <div class="sf-icon i-crimson"><i class="fas fa-chart-line"></i></div>
+          <h4>Historical Intelligence</h4>
+          <p>Analysis of past incidents, seasonal trends, and travel patterns in the area for predictive safety.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ STATS ═══════════ -->
+<div class="stats-band">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item fade-in"><h4>24/7</h4><p>Round-the-clock monitoring and support</p></div>
+      <div class="stat-item fade-in"><h4>15+</h4><p>Regional Indian languages supported</p></div>
+      <div class="stat-item fade-in"><h4>250K+</h4><p>Tourists secured nationwide</p></div>
+      <div class="stat-item fade-in"><h4>100+</h4><p>Cities and destinations covered</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ FEATURES ═══════════ -->
+<section id="features">
+  <div class="container">
+    <div class="s-head fade-in">
+      <span class="s-eyebrow">Comprehensive Safety</span>
+      <h2 class="s-title">Everything You Need,<br><em>When You Need It Most</em></h2>
+      <p class="s-sub">From AI anomaly detection to blockchain-backed identity — Saarthi is a complete digital safety ecosystem built for India's diverse tourism landscape.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card fade-in">
+        <div class="feat-num">01</div>
+        <div class="feat-icon i-navy"><i class="fas fa-id-card"></i></div>
+        <h4>Blockchain Digital ID</h4>
+        <p>Tamper-proof identity secured on Polygon blockchain. Issued at entry, auto-revoked on trip end. Scan-to-verify at hotels and checkposts.</p>
+      </div>
+      <div class="feat-card fade-in">
+        <div class="feat-num">02</div>
+        <div class="feat-icon i-crimson"><i class="fas fa-exclamation-circle"></i></div>
+        <h4>SOS Panic Button</h4>
+        <p>One-tap emergency alert sends live GPS to nearest police unit and all emergency contacts simultaneously — works offline via BLE mesh.</p>
+      </div>
+      <div class="feat-card fade-in">
+        <div class="feat-num">03</div>
+        <div class="feat-icon i-emerald"><i class="fas fa-map-marked-alt"></i></div>
+        <h4>Geo-Fencing Alerts</h4>
+        <p>Dynamic safety zones around restricted and high-risk areas. Instant push alert when boundary is crossed, with evacuation guidance.</p>
+      </div>
+      <div class="feat-card fade-in">
+        <div class="feat-num">04</div>
+        <div class="feat-icon i-saffron"><i class="fas fa-brain"></i></div>
+        <h4>AI Anomaly Detection</h4>
+        <p>Detects sudden location drop-offs, prolonged inactivity, and route deviations. Flags distress behaviour before it escalates.</p>
+      </div>
+      <div class="feat-card fade-in">
+        <div class="feat-num">05</div>
+        <div class="feat-icon i-purple"><i class="fas fa-wifi-slash"></i></div>
+        <h4>Zero-Connectivity SOS</h4>
+        <p>BLE mesh networking relays your SOS via nearby phones to the backend — even from Ziro Valley or deep Kaziranga with zero 4G signal.</p>
+      </div>
+      <div class="feat-card fade-in">
+        <div class="feat-num">06</div>
+        <div class="feat-icon i-teal"><i class="fas fa-chart-area"></i></div>
+        <h4>Predictive Crowd AI</h4>
+        <p>Forecasts crowd surges at tourist sites 45 minutes ahead. Dynamically reroutes visitors to prevent stampedes with incentive-based nudges.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ HOW IT WORKS ═══════════ -->
+<section id="how-it-works">
+  <div class="container">
+    <div class="s-head fade-in">
+      <span class="s-eyebrow">Quick Start</span>
+      <h2 class="s-title">How <em>Saarthi Works</em></h2>
+      <p class="s-sub">Our comprehensive three-step approach ensures your safety from registration to emergency response, leveraging cutting-edge technology and human expertise.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step fade-in">
+        <div class="step-num">
+          <i class="fas fa-user-plus"></i>
+          <span class="step-badge">1</span>
+        </div>
+        <h4>Secure Registration</h4>
+        <p>Complete our 4-step KYC verification to receive your blockchain-secured digital tourist ID with biometric authentication and emergency contacts setup.</p>
+      </div>
+      <div class="step fade-in">
+        <div class="step-num">
+          <i class="fas fa-satellite-dish"></i>
+          <span class="step-badge">2</span>
+        </div>
+        <h4>Intelligent Monitoring</h4>
+        <p>Enjoy real-time AI-powered safety monitoring with predictive alerts, geo-fence boundaries, route optimisation for safer paths, and automatic check-ins.</p>
+      </div>
+      <div class="step fade-in">
+        <div class="step-num">
+          <i class="fas fa-bolt"></i>
+          <span class="step-badge">3</span>
+        </div>
+        <h4>Instant Emergency Response</h4>
+        <p>Access immediate assistance with precise GPS tracking, multilingual support, coordination with local authorities, and real-time family notifications.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ IOT ═══════════ -->
+<section id="iot">
+  <div class="container">
+    <div class="s-head fade-in">
+      <span class="s-eyebrow">IoT Integration</span>
+      <h2 class="s-title">Smart <em>Safety Devices</em></h2>
+      <p class="s-sub">Enhance your travel security with connected devices designed for high-risk adventures and remote destinations across India.</p>
+    </div>
+    <div class="iot-grid">
+      <div class="iot-card fade-in">
+        <div class="iot-ico"><i class="fas fa-heartbeat"></i></div>
+        <h4>Smart Safety Wristband</h4>
+        <p>Advanced wearable with SOS functionality, vital sign monitoring, GPS tracking, and automatic fall detection. 7-day battery life. BLE connectivity.</p>
+      </div>
+      <div class="iot-card fade-in">
+        <div class="iot-ico"><i class="fas fa-satellite-dish"></i></div>
+        <h4>Satellite GPS Tracker</h4>
+        <p>Ultra-compact tracking device that maintains connectivity even in the most remote areas using satellite backup. 30-day battery. Waterproof IP68.</p>
+      </div>
+      <div class="iot-card fade-in">
+        <div class="iot-ico"><i class="fas fa-mobile-alt"></i></div>
+        <h4>Enhanced Safety Case</h4>
+        <p>Ruggedised smartphone case featuring emergency beacon, extended battery pack, signal booster, and integrated emergency communication tools.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ ADVANCED FEATURES ═══════════ -->
+<section id="advanced">
+  <div class="container">
+    <div class="s-head fade-in">
+      <span class="s-eyebrow">Innovation Layer</span>
+      <h2 class="s-title">Features That Define<br><em>The Future of Safe Travel</em></h2>
+    </div>
+    <div class="adv-grid">
+      <div class="adv-card fade-in">
+        <div class="adv-head" style="background:#EFF6FF;">
+          <div class="adv-icon i-purple"><i class="fas fa-network-wired"></i></div>
+          <div>
+            <h4>Zero-Connectivity Mesh SOS</h4>
+            <p>Your SOS hops phone-to-phone via BLE until it reaches a device with internet — then fires to the police dashboard. Works in Ziro Valley, Spiti, deep Kaziranga.</p>
+          </div>
+        </div>
+        <div class="adv-body">
+          <span class="tech-tag tt-blue">react-native-ble-plx</span>
+          <span class="tech-tag tt-purple">AES-256</span>
+          <span class="tech-tag tt-green">Wi-Fi Direct</span>
+          <span class="tech-tag tt-amber">WebSockets</span>
+          <br>
+          <span class="wow-badge"><i class="fas fa-star"></i> Demo: SOS via Airplane Mode → Dashboard live</span>
+        </div>
+      </div>
+      <div class="adv-card fade-in">
+        <div class="adv-head" style="background:#FFFBEB;">
+          <div class="adv-icon i-saffron"><i class="fas fa-file-contract"></i></div>
+          <div>
+            <h4>Micro-Insurance Smart Contracts</h4>
+            <p>₹50 UPI premium locked in a Polygon smart contract. Auto-pays ₹2,000 emergency payout when e-FIR theft verified by police — zero human intervention.</p>
+          </div>
+        </div>
+        <div class="adv-body">
+          <span class="tech-tag tt-purple">Solidity</span>
+          <span class="tech-tag tt-blue">Polygon Amoy</span>
+          <span class="tech-tag tt-green">Chainlink Oracle</span>
+          <span class="tech-tag tt-amber">UPI Integration</span>
+          <br>
+          <span class="wow-badge"><i class="fas fa-star"></i> Live tx hash on Polygon explorer</span>
+        </div>
+      </div>
+      <div class="adv-card fade-in">
+        <div class="adv-head" style="background:#ECFDF5;">
+          <div class="adv-icon i-emerald"><i class="fas fa-chart-area"></i></div>
+          <div>
+            <h4>Predictive Crowd Forecasting</h4>
+            <p>LSTM time-series model predicts crowd surges 45 mins ahead using weather, GPS density, and holidays. Positive rerouting: "Visit this café — 15% off instead."</p>
+          </div>
+        </div>
+        <div class="adv-body">
+          <span class="tech-tag tt-blue">FastAPI</span>
+          <span class="tech-tag tt-purple">Scikit-learn / LSTM</span>
+          <span class="tech-tag tt-green">OpenWeatherMap</span>
+          <br>
+          <span class="wow-badge"><i class="fas fa-star"></i> Dashboard heatmap time-slider demo</span>
+        </div>
+      </div>
+      <div class="adv-card fade-in">
+        <div class="adv-head" style="background:#F5F3FF;">
+          <div class="adv-icon i-purple"><i class="fas fa-trophy"></i></div>
+          <div>
+            <h4>Proof of Travel NFT Badges</h4>
+            <p>GPS-verified visit to heritage sites mints an ERC-1155 NFT badge. Badge unlocks 10% discounts at verified local artisans and government emporiums.</p>
+          </div>
+        </div>
+        <div class="adv-body">
+          <span class="tech-tag tt-purple">ERC-1155</span>
+          <span class="tech-tag tt-blue">IPFS</span>
+          <span class="tech-tag tt-green">Polygon</span>
+          <span class="tech-tag tt-amber">QR Redemption</span>
+          <br>
+          <span class="wow-badge"><i class="fas fa-star"></i> Boosts local artisan economy</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ LANGUAGES ═══════════ -->
+<section id="languages">
+  <div class="container">
+    <div class="s-head fade-in">
+      <span class="s-eyebrow">Multilingual</span>
+      <h2 class="s-title">Comprehensive <em>Language Support</em></h2>
+      <p class="s-sub">Breaking language barriers in emergencies. Our platform supports all major Indian languages with real-time translation and native-speaking emergency operators.</p>
+    </div>
+    <div class="lang-selector fade-in">
+      <button class="lang-btn active">English</button>
+      <button class="lang-btn">हिंदी</button>
+      <button class="lang-btn">தமிழ்</button>
+      <button class="lang-btn">తెలుగు</button>
+      <button class="lang-btn">বাংলা</button>
+      <button class="lang-btn">मराठी</button>
+      <button class="lang-btn">ગુજરાતી</button>
+      <button class="lang-btn">ਪੰਜਾਬੀ</button>
+      <button class="lang-btn">മലയാളം</button>
+      <button class="lang-btn">ಕನ್ನಡ</button>
+      <button class="lang-btn">اردو</button>
+      <button class="lang-btn">অসমীয়া</button>
+    </div>
+    <div class="lang-feats">
+      <div class="lf-card fade-in">
+        <i class="fas fa-microphone"></i>
+        <h4>Voice Recognition</h4>
+        <p>Advanced speech-to-text in your native language for hands-free emergency access.</p>
+      </div>
+      <div class="lf-card fade-in">
+        <i class="fas fa-language"></i>
+        <h4>Real-Time Translation</h4>
+        <p>Instant communication with emergency services and local authorities in any Indian language.</p>
+      </div>
+      <div class="lf-card fade-in">
+        <i class="fas fa-headset"></i>
+        <h4>Native Operators</h4>
+        <p>Emergency support from native language speakers available around the clock, 365 days.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ DASHBOARD PREVIEW ═══════════ -->
+<section id="dashboard">
+  <div class="container">
+    <div class="s-head fade-in">
+      <span class="s-eyebrow">Authority Tools</span>
+      <h2 class="s-title">Tourism Department<br>&amp; <em>Police Dashboard</em></h2>
+      <p class="s-sub">Real-time command and control for law enforcement and tourism departments — built for speed, clarity, and decisive action.</p>
+    </div>
+    <div class="dash-grid">
+      <div class="dash-card fade-in">
+        <div class="dash-card-top">
+          <div class="dc-icon dc-r"><i class="fas fa-map-marked-alt"></i></div>
+          <h4>Live Tourist Heat Maps</h4>
+        </div>
+        <div class="dash-vis">
+          <div class="hspot hs1"></div>
+          <div class="hspot hs2"></div>
+          <div class="hspot hs3"></div>
+          <i class="fas fa-map" style="color:rgba(255,255,255,0.06);font-size:3rem;position:relative;"></i>
+        </div>
+        <p>Real-time cluster visualisation with predictive time-slider showing crowd density 45 minutes ahead.</p>
+        <div class="ds-stats">
+          <span class="ds-stat"><i class="fas fa-users"></i> 1,247 active</span>
+          <span class="ds-stat"><i class="fas fa-map-marker-alt"></i> 24 zones</span>
+          <div class="live-pip"></div>
+        </div>
+      </div>
+      <div class="dash-card fade-in">
+        <div class="dash-card-top">
+          <div class="dc-icon dc-g"><i class="fas fa-id-card"></i></div>
+          <h4>Digital ID Verification</h4>
+        </div>
+        <div class="dash-vis" style="flex-direction:column;justify-content:center;gap:6px;">
+          <div style="width:80%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:10px;display:flex;align-items:center;gap:10px;">
+            <div style="width:32px;height:32px;border-radius:50%;background:rgba(16,185,129,0.2);display:flex;align-items:center;justify-content:center;color:#34d399;font-size:0.8rem;flex-shrink:0;"><i class="fas fa-user"></i></div>
+            <div><div style="font-size:0.7rem;color:rgba(255,255,255,0.75);font-weight:600;">Rahul Sharma</div><div style="font-size:0.6rem;color:rgba(255,255,255,0.3);">STH-DL-A9M3K1 · ✓ Verified</div></div>
+          </div>
+        </div>
+        <p>Instant blockchain verification of any tourist ID. Access emergency contacts and trip details securely.</p>
+        <div class="ds-stats">
+          <span class="ds-stat"><i class="fas fa-check-circle"></i> 98% verified</span>
+          <span class="ds-stat"><i class="fas fa-database"></i> 5,700 records</span>
+        </div>
+      </div>
+      <div class="dash-card fade-in">
+        <div class="dash-card-top">
+          <div class="dc-icon dc-a"><i class="fas fa-bell ring-anim"></i></div>
+          <h4>Alert Management</h4>
+        </div>
+        <div class="dash-vis">
+          <i class="fas fa-bell" style="color:rgba(245,158,11,0.2);font-size:3rem;position:relative;"></i>
+          <div style="position:absolute;width:20px;height:20px;border-radius:50%;background:rgba(239,68,68,0.4);animation:pulse-btn 1.5s infinite;top:30%;left:42%;"></div>
+        </div>
+        <p>Prioritised alert queue with AI-generated response protocols. Average dispatch time: 2.4 minutes.</p>
+        <div class="ds-stats">
+          <span class="ds-stat"><i class="fas fa-exclamation-triangle"></i> 3 active</span>
+          <span class="ds-stat"><i class="fas fa-clock"></i> 2.4m avg</span>
+        </div>
+      </div>
+      <div class="dash-card fade-in">
+        <div class="dash-card-top">
+          <div class="dc-icon dc-b"><i class="fas fa-file-alt"></i></div>
+          <h4>Automated e-FIR</h4>
+        </div>
+        <div class="dash-vis" style="align-items:flex-start;padding:14px;">
+          <div style="width:68%;background:rgba(255,255,255,0.05);border-radius:6px;padding:10px;display:flex;flex-direction:column;gap:5px;">
+            <div style="height:5px;background:rgba(255,255,255,0.08);border-radius:3px;width:55%;"></div>
+            <div style="height:5px;background:rgba(255,255,255,0.08);border-radius:3px;"></div>
+            <div style="height:5px;background:rgba(255,255,255,0.08);border-radius:3px;width:75%;"></div>
+            <div style="height:5px;background:rgba(255,255,255,0.08);border-radius:3px;width:45%;"></div>
+          </div>
+        </div>
+        <p>One-click FIR generation for missing person cases, auto-populated with tourist's Digital ID data.</p>
+        <div class="ds-stats">
+          <span class="ds-stat"><i class="fas fa-file-export"></i> 87 generated</span>
+          <span class="ds-stat"><i class="fas fa-bolt"></i> Instant</span>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:36px;">
+      <a href="dashboard.html" class="btn btn-saffron btn-lg">
+        <i class="fas fa-tachometer-alt"></i> Open Full Authority Dashboard
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SOS CTA ═══════════ -->
+<div class="sos-section">
+  <div class="sos-ripples">
+    <div class="sos-ripple r1"></div>
+    <div class="sos-ripple r2"></div>
+    <div class="sos-ripple r3"></div>
+  </div>
+  <div class="container" style="position:relative;z-index:1;">
+    <h2>In An Emergency?</h2>
+    <p>Press the SOS button. We'll handle the rest in under 3 minutes.</p>
+    <button class="sos-big" id="panic-button">
+      <i class="fas fa-phone-alt"></i>
+      <span>Emergency Alert</span>
+    </button>
+    <div class="sos-meta">
+      <div class="sos-m-item">
+        <i class="fas fa-map-marker-alt"></i>
+        <strong>Live GPS</strong>
+        <span>Sent to nearest police</span>
+      </div>
+      <div class="sos-m-item">
+        <i class="fas fa-users"></i>
+        <strong>Contacts Alerted</strong>
+        <span>All emergency contacts</span>
+      </div>
+      <div class="sos-m-item">
+        <i class="fas fa-wifi-slash"></i>
+        <strong>Works Offline</strong>
+        <span>Via BLE mesh network</span>
+      </div>
+      <div class="sos-m-item">
+        <i class="fas fa-clock"></i>
+        <strong>&lt;3 Minutes</strong>
+        <span>Average response time</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <div class="logo-text">SAAR<span>THI</span></div>
+        <p>India's premier tourist safety monitoring system — ensuring secure and memorable travel experiences through AI, Blockchain, and human expertise.</p>
+        <div class="social-row">
+          <a href="#" class="soc"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="soc"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="soc"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="soc"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#" class="soc"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+      <div class="foot-col">
+        <h5>Tourist</h5>
+        <a href="register.html">Tourist Registration</a>
+        <a href="#features">Safety Features</a>
+        <a href="emergency.html">Emergency Help</a>
+        <a href="transport.html">Transport & Fares</a>
+        <a href="#languages">Language Support</a>
+      </div>
+      <div class="foot-col">
+        <h5>Authority</h5>
+        <a href="dashboard.html">Police Dashboard</a>
+        <a href="dashboard.html#efir">e-FIR System</a>
+        <a href="dashboard.html#alerts">Alert Management</a>
+        <a href="dashboard.html#heatmap">Heat Maps</a>
+      </div>
+      <div class="foot-col">
+        <h5>Emergency</h5>
+        <a href="tel:112">112 — National Emergency</a>
+        <a href="tel:100">100 — Police</a>
+        <a href="tel:108">108 — Ambulance</a>
+        <a href="tel:101">101 — Fire Brigade</a>
+        <a href="tel:1363">1363 — Tourist Helpline</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <p>&copy; 2025 Saarthi Tourist Safety Platform. All rights reserved.</p>
+      <p>Protecting travellers across India with advanced technology &amp; care.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════ CHATBOT ═══════════ -->
+<button id="chatbot-icon" aria-label="Open chat assistant">
+  <i class="fas fa-comments"></i>
+</button>
+
+<div id="chatbot-container" role="dialog" aria-label="Saarthi Assistant">
+  <div class="cb-head">
+    <div class="cb-av"><i class="fas fa-compass"></i></div>
+    <div class="cb-info">
+      <h5>Saarthi Assistant</h5>
+      <p>Your AI Travel Companion · Online</p>
+    </div>
+    <button id="chatbot-toggle"><i class="fas fa-times"></i></button>
+  </div>
+  <div id="chatbot-messages" role="log" aria-live="polite">
+    <div class="message bot">
+      <div class="bubble">
+        Namaste! 🙏 I'm Saarthi's AI assistant. Ask me about safety features, registration, emergency procedures, or anything about safe travel in India.
+        <div class="message-time" id="welcome-time"></div>
+      </div>
+    </div>
+    <div class="typing-indicator" id="typing">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+  <div id="quick-suggestions">
+    <span class="suggestion-chip" data-q="How does the safety score work?">Safety Score</span>
+    <span class="suggestion-chip" data-q="What are the emergency procedures?">Emergency Help</span>
+    <span class="suggestion-chip" data-q="How do I register as a tourist?">Registration</span>
+    <span class="suggestion-chip" data-q="Tell me about IoT safety devices">IoT Devices</span>
+  </div>
+  <div id="chatbot-input">
+    <input type="text" id="userInput" placeholder="Ask me anything about travel safety…" aria-label="Type your message">
+    <button id="mic-button" title="Voice input"><i class="fas fa-microphone"></i></button>
+    <button id="send-button" title="Send"><i class="fas fa-paper-plane"></i></button>
+  </div>
+</div>
+
+<!-- ═══════════ EMERGENCY MODAL ═══════════ -->
+<div class="modal" id="emergency-modal" role="dialog">
+  <div class="modal-content">
+    <div class="modal-icon"><i class="fas fa-exclamation-triangle"></i></div>
+    <h3>🚨 Emergency Alert System</h3>
+    <p>You're about to trigger an emergency alert. This will immediately notify:</p>
+    <ul>
+      <li>Local emergency services with your precise GPS location</li>
+      <li>Your registered emergency contacts via SMS</li>
+      <li>Saarthi monitoring centre for immediate assistance</li>
+    </ul>
+    <p><strong>Only proceed if you're in genuine danger or need immediate help.</strong></p>
+    <div class="modal-buttons">
+      <button class="btn btn-outline" id="cancel-emergency"><i class="fas fa-times"></i> Cancel</button>
+      <button class="btn btn-danger" id="confirm-emergency"><i class="fas fa-exclamation-triangle"></i> Send Emergency Alert</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SCRIPTS ═══════════ -->
+<script>
+/* ── Init ── */
+document.getElementById('welcome-time').textContent =
+  new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+
+/* ── Scroll progress ── */
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  document.getElementById('scroll-bar').style.width = (window.scrollY / h * 100) + '%';
+});
+
+/* ── Dark mode ── */
+const themeBtn = document.getElementById('theme-toggle');
+const savedTheme = localStorage.getItem('saarthi-theme');
+if (savedTheme === 'dark' || (!savedTheme && matchMedia('(prefers-color-scheme:dark)').matches)) {
+  document.body.classList.add('dark');
+  themeBtn.innerHTML = '<i class="fas fa-sun"></i>';
+}
+themeBtn.addEventListener('click', () => {
+  document.body.classList.toggle('dark');
+  const isDark = document.body.classList.contains('dark');
+  themeBtn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+  localStorage.setItem('saarthi-theme', isDark ? 'dark' : 'light');
+});
+
+/* ── Mobile nav ── */
+const hamBtn = document.getElementById('ham-btn');
+const mainNav = document.getElementById('main-nav');
+hamBtn.addEventListener('click', () => mainNav.classList.toggle('open'));
+document.addEventListener('click', e => {
+  if (!mainNav.contains(e.target) && !hamBtn.contains(e.target))
+    mainNav.classList.remove('open');
+});
+
+/* ── Language selector ── */
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+/* ── Emergency modal ── */
+document.getElementById('panic-button').addEventListener('click', e => {
+  e.preventDefault();
+  document.getElementById('emergency-modal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+});
+document.getElementById('cancel-emergency').addEventListener('click', () => {
+  document.getElementById('emergency-modal').classList.remove('active');
+  document.body.style.overflow = '';
+});
+document.getElementById('confirm-emergency').addEventListener('click', function() {
+  this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending…';
+  this.disabled = true;
+  setTimeout(() => {
+    alert('🚨 Emergency alert sent!\n\n✅ Local authorities notified\n✅ Emergency contacts alerted\n✅ Saarthi monitoring centre activated\n\nHelp is on the way. Stay safe!');
+    document.getElementById('emergency-modal').classList.remove('active');
+    document.body.style.overflow = '';
+    this.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Send Emergency Alert';
+    this.disabled = false;
+  }, 2000);
+});
+document.getElementById('emergency-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) {
+    e.currentTarget.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+});
+
+/* ── Chatbot ── */
+const chatIcon      = document.getElementById('chatbot-icon');
+const chatContainer = document.getElementById('chatbot-container');
+const chatToggle    = document.getElementById('chatbot-toggle');
+const userInput     = document.getElementById('userInput');
+const sendBtn       = document.getElementById('send-button');
+const micBtn        = document.getElementById('mic-button');
+const messages      = document.getElementById('chatbot-messages');
+const typing        = document.getElementById('typing');
+
+const KB = {
+  greet: ["Hello! I'm here to help with your travel safety questions. How can I assist?", "Hi! Welcome to Saarthi. What would you like to know about staying safe while travelling in India?"],
+  bye: ["Stay safe on your travels! 🌍 Feel free to return anytime.", "Happy journeys! ✈️ May your travels be wonderful."],
+  score: "Your safety score is calculated using AI analysis of: current location safety rating (crime stats, local conditions), time-of-day risk, proximity to emergency services, activity patterns, and historical incident data. It updates in real-time to help you make informed travel decisions.",
+  emergency: "In an emergency: 1) Press the SOS button in the app 2) Your GPS is sent instantly to local authorities 3) Emergency contacts get automatic SMS 4) Saarthi monitoring is alerted 5) Via BLE mesh — even works without internet. Stay calm, help arrives in under 3 minutes.",
+  register: "Registration takes ~10 minutes: 1) Personal info + photo 2) KYC document upload (Aadhaar/Passport via DigiLocker) 3) Travel plans + itinerary 4) Set Trip PIN & review → Blockchain Digital ID generated instantly!",
+  iot: "IoT devices: ① Smart Safety Wristband — SOS button, vital monitoring, fall detection, GPS, 7-day battery. ② Satellite GPS Tracker — works in remote areas, 30-day battery, waterproof. ③ Enhanced Safety Case — emergency beacon, signal booster, extended battery.",
+  language: "Saarthi supports 15+ languages: Hindi, Tamil, Telugu, Bengali, Marathi, Gujarati, Punjabi, Malayalam, Kannada, Urdu, Assamese, Odia + English. Features: voice recognition in native language, real-time translation with emergency services, and native-speaking emergency operators.",
+  monitoring: "24/7 monitoring includes: AI threat detection, real-time location tracking, automatic safety score updates, predictive risk analysis, emergency service coordination, family notification, route safety optimisation, weather monitoring, and anomaly detection (inactivity, location drop-offs).",
+  blockchain: "Saarthi uses Polygon blockchain for: ① Digital Tourist ID minting (auto-revokes when trip ends) ② Micro-insurance smart contracts (₹50 premium → ₹2,000 auto-payout on theft) ③ Tamper-proof trip records ④ ZK-KYC (your Aadhaar number is never stored — only a hash).",
+  mesh: "Zero-connectivity SOS: When you press SOS with no internet, the app uses Bluetooth Low Energy (BLE) to broadcast an AES-encrypted payload. Nearby phones running Saarthi relay it until one with internet fires it to the police dashboard. Works in remote areas like Ziro Valley or Spiti.",
+  default: "I can help with: safety scores, emergency procedures, registration, IoT devices, language support, monitoring features, blockchain security, or mesh SOS. What would you like to know?"
+};
+
+function matchReply(q) {
+  const l = q.toLowerCase();
+  if (/^(hi|hello|hey|good\s)/i.test(l)) return KB.greet[Math.floor(Math.random()*2)];
+  if (/(bye|goodbye|thank)/i.test(l)) return KB.bye[Math.floor(Math.random()*2)];
+  if (/(score|rating)/i.test(l)) return KB.score;
+  if (/(emergency|sos|panic|danger|help)/i.test(l)) return KB.emergency;
+  if (/(register|registr|sign.?up|kyc)/i.test(l)) return KB.register;
+  if (/(iot|device|wristband|tracker|gadget)/i.test(l)) return KB.iot;
+  if (/(language|translate|hindi|tamil|bengali|multilingual)/i.test(l)) return KB.language;
+  if (/(monitor|track|surveillance|24.?7)/i.test(l)) return KB.monitoring;
+  if (/(blockchain|polygon|nft|crypto|id)/i.test(l)) return KB.blockchain;
+  if (/(mesh|offline|bluetooth|ble|zero.connect)/i.test(l)) return KB.mesh;
+  return KB.default;
+}
+
+function addMsg(text, isUser) {
+  const d = document.createElement('div');
+  d.className = 'message ' + (isUser ? 'user' : 'bot');
+  const t = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  let html = isUser ? text : text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+  d.innerHTML = `<div class="bubble">${html}<div class="message-time">${t}</div></div>`;
+  messages.insertBefore(d, typing);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function handleMsg() {
+  const val = userInput.value.trim();
+  if (!val) return;
+  addMsg(val, true);
+  userInput.value = '';
+  typing.style.display = 'flex';
+  messages.scrollTop = messages.scrollHeight;
+  setTimeout(() => {
+    typing.style.display = 'none';
+    addMsg(matchReply(val), false);
+  }, 700 + Math.random()*900);
+}
+
+chatIcon.addEventListener('click', () => {
+  chatContainer.classList.toggle('active');
+  chatIcon.innerHTML = chatContainer.classList.contains('active')
+    ? '<i class="fas fa-times"></i>' : '<i class="fas fa-comments"></i>';
+  if (chatContainer.classList.contains('active')) userInput.focus();
+});
+chatToggle.addEventListener('click', () => {
+  chatContainer.classList.remove('active');
+  chatIcon.innerHTML = '<i class="fas fa-comments"></i>';
+});
+sendBtn.addEventListener('click', handleMsg);
+userInput.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleMsg(); } });
+
+document.querySelectorAll('.suggestion-chip').forEach(c => {
+  c.addEventListener('click', () => {
+    userInput.value = c.getAttribute('data-q');
+    handleMsg();
+    document.getElementById('quick-suggestions').style.display = 'none';
+  });
+});
+
+micBtn.addEventListener('click', () => {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { addMsg("Voice input is not supported in your browser. Please type instead.", false); return; }
+  const rec = new SR(); rec.lang = 'en-IN'; rec.interimResults = false;
+  micBtn.innerHTML = '<i class="fas fa-stop"></i>'; micBtn.style.background = 'var(--crimson)'; micBtn.style.color = '#fff';
+  rec.onresult = e => { userInput.value = e.results[0][0].transcript; handleMsg(); };
+  rec.onerror  = () => addMsg("Couldn't hear you. Please try again or type.", false);
+  rec.onend    = () => { micBtn.innerHTML = '<i class="fas fa-microphone"></i>'; micBtn.style.background = ''; micBtn.style.color = ''; };
+  rec.start();
+});
+
+/* ── Scroll animations ── */
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+
+/* ── Keyboard shortcuts ── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('emergency-modal').classList.remove('active');
+    chatContainer.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+});
+</script>
+</body>
+</html>

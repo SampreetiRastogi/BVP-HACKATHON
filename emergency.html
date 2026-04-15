@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saarthi — Emergency & Safety Map</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --navy:#1E3A8A;--saffron:#F59E0B;--crimson:#EF4444;--emerald:#10B981;
+      --bg:#F8FAFC;--surface:#FFFFFF;--border:#E2E8F0;
+      --text:#0F172A;--text-s:#475569;--text-m:#94A3B8;
+      --radius:12px;--shadow:0 4px 24px rgba(30,58,138,0.08);
+      --font:'Plus Jakarta Sans',sans-serif;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);}
+    header{background:#fff;border-bottom:1px solid var(--border);padding:0 24px;height:66px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+    .logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+    .logo img{height:34px;object-fit:contain;}
+    .logo-text{font-size:1.2rem;font-weight:800;color:var(--navy);}
+    .logo-text span{color:var(--saffron);}
+    .back-link{display:flex;align-items:center;gap:6px;color:var(--text-s);text-decoration:none;font-size:0.875rem;font-weight:500;padding:7px 14px;border-radius:8px;transition:all 0.2s;}
+    .back-link:hover{background:#F1F5F9;color:var(--navy);}
+    .page{max-width:1000px;margin:40px auto;padding:0 24px 80px;}
+    .tab-bar{display:flex;background:#fff;border:1px solid var(--border);border-radius:14px;padding:4px;gap:4px;margin-bottom:32px;}
+    .tab-btn{flex:1;padding:10px;border-radius:10px;border:none;background:none;font-family:var(--font);font-size:0.875rem;font-weight:600;color:var(--text-s);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;}
+    .tab-btn.active{background:var(--navy);color:#fff;}
+    .tab-panel{display:none;}
+    .tab-panel.active{display:block;}
+
+    /* SOS PANEL */
+    .sos-hero{background:linear-gradient(135deg,#450A0A,#7F1D1D);border-radius:20px;padding:40px;text-align:center;margin-bottom:28px;position:relative;overflow:hidden;}
+    .sos-rings{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+    .sos-ring{position:absolute;border-radius:50%;border:1px solid rgba(239,68,68,0.15);}
+    .sos-ring:nth-child(1){width:200px;height:200px;}
+    .sos-ring:nth-child(2){width:320px;height:320px;}
+    .sos-ring:nth-child(3){width:440px;height:440px;}
+    .sos-hero h2{font-size:1.6rem;font-weight:800;color:#fff;margin-bottom:8px;position:relative;}
+    .sos-hero p{color:rgba(255,255,255,0.7);margin-bottom:28px;position:relative;}
+    .sos-btn{width:120px;height:120px;border-radius:50%;background:var(--crimson);border:3px solid rgba(255,255,255,0.2);color:#fff;font-size:0.85rem;font-weight:800;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;margin:0 auto;position:relative;animation:pulse-sos 2s infinite;font-family:var(--font);}
+    .sos-btn i{font-size:1.8rem;}
+    @keyframes pulse-sos{0%{box-shadow:0 0 0 0 rgba(239,68,68,0.5);}70%{box-shadow:0 0 0 24px rgba(239,68,68,0);}100%{box-shadow:0 0 0 0 rgba(239,68,68,0);}}
+    .sos-countdown{display:none;font-size:3rem;font-weight:900;color:#fff;position:relative;margin:16px 0;}
+    .sos-cancel{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:8px 20px;border-radius:8px;cursor:pointer;font-family:var(--font);font-size:0.875rem;font-weight:600;margin-top:12px;display:none;}
+
+    /* EMERGENCY CONTACTS */
+    .section-title{font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+    .section-title i{color:var(--navy);}
+    .contacts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;}
+    .contact-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;transition:all 0.2s;cursor:pointer;text-decoration:none;}
+    .contact-card:hover{border-color:var(--navy);transform:translateY(-2px);box-shadow:var(--shadow);}
+    .cc-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin:0 auto 12px;}
+    .ic-red{background:#FEF2F2;color:var(--crimson);}
+    .ic-blue{background:#EFF6FF;color:var(--navy);}
+    .ic-green{background:#ECFDF5;color:var(--emerald);}
+    .ic-amber{background:#FFFBEB;color:var(--saffron);}
+    .cc-num{font-size:1.4rem;font-weight:800;color:var(--text);}
+    .cc-label{font-size:0.75rem;color:var(--text-s);margin-top:4px;}
+    .cc-call-btn{display:inline-flex;align-items:center;gap:4px;margin-top:10px;background:var(--navy);color:#fff;font-size:0.72rem;font-weight:700;padding:4px 12px;border-radius:50px;text-decoration:none;}
+
+    /* EFIR FORM */
+    .efir-card{background:#fff;border:1px solid var(--border);border-radius:20px;padding:28px;margin-bottom:20px;}
+    .efir-card h3{font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:20px;}
+    .form-group{margin-bottom:16px;}
+    label{display:block;font-size:0.8rem;font-weight:600;color:var(--text-s);margin-bottom:6px;}
+    input,select,textarea{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:0.9rem;font-family:var(--font);color:var(--text);outline:none;transition:all 0.2s;}
+    input:focus,select:focus,textarea:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(30,58,138,0.1);}
+    textarea{resize:vertical;min-height:80px;}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .btn-danger-full{width:100%;padding:14px;background:var(--crimson);color:#fff;border:none;border-radius:var(--radius);font-size:1rem;font-weight:700;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;margin-top:8px;}
+    .btn-danger-full:hover{background:#dc2626;}
+
+    /* MAP PANEL */
+    .map-mock{background:linear-gradient(135deg,#dbeafe,#d1fae5);border:1px solid var(--border);border-radius:16px;height:300px;position:relative;overflow:hidden;margin-bottom:20px;}
+    .map-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(30,58,138,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(30,58,138,0.04) 1px,transparent 1px);background-size:40px 40px;}
+    .map-pin{position:absolute;display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:transform 0.2s;}
+    .map-pin:hover{transform:scale(1.1);}
+    .pin-dot{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.9rem;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.2);}
+    .pin-red{background:var(--crimson);}
+    .pin-blue{background:var(--navy);}
+    .pin-green{background:var(--emerald);}
+    .pin-user{background:var(--saffron);}
+    .pin-pulse{animation:pin-pulse 2s infinite;}
+    @keyframes pin-pulse{0%,100%{box-shadow:0 4px 12px rgba(0,0,0,0.2);}50%{box-shadow:0 4px 24px rgba(239,68,68,0.5);}}
+    .pin-label{font-size:0.65rem;font-weight:700;background:#fff;padding:2px 8px;border-radius:4px;margin-top:3px;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+    .map-legend{display:flex;gap:16px;font-size:0.75rem;color:var(--text-s);margin-bottom:20px;flex-wrap:wrap;}
+    .map-legend-item{display:flex;align-items:center;gap:5px;}
+    .ml-dot{width:10px;height:10px;border-radius:50%;}
+    .nearby-list{display:flex;flex-direction:column;gap:12px;}
+    .nearby-item{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;align-items:center;gap:14px;}
+    .ni-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+    .ni-body{flex:1;}
+    .ni-name{font-size:0.9rem;font-weight:700;color:var(--text);}
+    .ni-meta{font-size:0.78rem;color:var(--text-s);margin-top:2px;}
+    .ni-dist{font-size:0.85rem;font-weight:700;color:var(--navy);}
+    .ni-dir{background:var(--navy);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:0.75rem;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:4px;}
+
+    /* FARE ESTIMATOR */
+    .fare-tabs{display:flex;gap:8px;margin-bottom:20px;}
+    .fare-tab{padding:8px 18px;border-radius:50px;border:1.5px solid var(--border);background:#fff;font-size:0.85rem;font-weight:600;color:var(--text-s);cursor:pointer;transition:all 0.2s;font-family:var(--font);}
+    .fare-tab.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+    .fare-panel{display:none;}
+    .fare-panel.active{display:block;}
+    .fare-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:12px;display:flex;align-items:center;gap:16px;}
+    .fare-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+    .fare-body{flex:1;}
+    .fare-name{font-size:0.95rem;font-weight:700;color:var(--text);}
+    .fare-detail{font-size:0.78rem;color:var(--text-s);margin-top:2px;}
+    .fare-price{font-size:1.2rem;font-weight:800;color:var(--navy);}
+    .fare-price-sub{font-size:0.72rem;color:var(--text-m);}
+    .fare-book{background:var(--navy);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:0.8rem;font-weight:600;cursor:pointer;font-family:var(--font);}
+    .fare-book:hover{background:#162d6f;}
+
+    /* CONFIRM TOAST */
+    .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1E293B;color:#fff;padding:12px 24px;border-radius:50px;font-size:0.875rem;font-weight:500;z-index:1000;display:none;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(0,0,0,0.3);}
+    .toast.show{display:flex;}
+
+    @media(max-width:600px){
+      .contacts-grid{grid-template-columns:repeat(2,1fr);}
+      .form-grid{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">
+    <img src="saarthi_logo.png" alt="Saarthi" onerror="this.style.display='none'">
+    <span class="logo-text">SAAR<span>THI</span></span>
+  </a>
+  <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back</a>
+</header>
+
+<div class="page">
+  <!-- TAB BAR -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('emergency',this)"><i class="fas fa-exclamation-triangle"></i> Emergency SOS</button>
+    <button class="tab-btn" onclick="switchTab('map',this)"><i class="fas fa-map-marker-alt"></i> Safety Map</button>
+    <button class="tab-btn" onclick="switchTab('efir',this)"><i class="fas fa-file-alt"></i> File Complaint</button>
+    <button class="tab-btn" onclick="switchTab('fares',this)"><i class="fas fa-rupee-sign"></i> Fares & Booking</button>
+  </div>
+
+  <!-- EMERGENCY TAB -->
+  <div class="tab-panel active" id="tab-emergency">
+    <div class="sos-hero">
+      <div class="sos-rings">
+        <div class="sos-ring"></div><div class="sos-ring"></div><div class="sos-ring"></div>
+      </div>
+      <h2>Emergency SOS</h2>
+      <p>Press and hold to send your live location to police and all emergency contacts</p>
+      <button class="sos-btn" id="sos-main-btn" onmousedown="startSOS()" onmouseup="cancelSOS()" ontouchstart="startSOS()" ontouchend="cancelSOS()">
+        <i class="fas fa-phone-alt"></i>
+        <span>HOLD SOS</span>
+      </button>
+      <div class="sos-countdown" id="sos-cd">3</div>
+      <button class="sos-cancel" id="sos-cancel-btn" onclick="cancelSOS()">Cancel</button>
+    </div>
+
+    <div class="section-title"><i class="fas fa-phone-alt"></i> Emergency Helplines</div>
+    <div class="contacts-grid">
+      <a href="tel:112" class="contact-card">
+        <div class="cc-icon ic-red"><i class="fas fa-phone-alt"></i></div>
+        <div class="cc-num">112</div>
+        <div class="cc-label">National Emergency</div>
+        <span class="cc-call-btn"><i class="fas fa-phone"></i> Call</span>
+      </a>
+      <a href="tel:100" class="contact-card">
+        <div class="cc-icon ic-blue"><i class="fas fa-shield-alt"></i></div>
+        <div class="cc-num">100</div>
+        <div class="cc-label">Police</div>
+        <span class="cc-call-btn"><i class="fas fa-phone"></i> Call</span>
+      </a>
+      <a href="tel:108" class="contact-card">
+        <div class="cc-icon ic-green"><i class="fas fa-ambulance"></i></div>
+        <div class="cc-num">108</div>
+        <div class="cc-label">Ambulance</div>
+        <span class="cc-call-btn"><i class="fas fa-phone"></i> Call</span>
+      </a>
+      <a href="tel:101" class="contact-card">
+        <div class="cc-icon ic-red"><i class="fas fa-fire"></i></div>
+        <div class="cc-num">101</div>
+        <div class="cc-label">Fire Brigade</div>
+        <span class="cc-call-btn"><i class="fas fa-phone"></i> Call</span>
+      </a>
+      <a href="tel:1363" class="contact-card">
+        <div class="cc-icon ic-amber"><i class="fas fa-map-marked-alt"></i></div>
+        <div class="cc-num">1363</div>
+        <div class="cc-label">Tourist Helpline</div>
+        <span class="cc-call-btn"><i class="fas fa-phone"></i> Call</span>
+      </a>
+      <a href="tel:181" class="contact-card">
+        <div class="cc-icon ic-blue"><i class="fas fa-female"></i></div>
+        <div class="cc-num">181</div>
+        <div class="cc-label">Women Helpline</div>
+        <span class="cc-call-btn"><i class="fas fa-phone"></i> Call</span>
+      </a>
+    </div>
+
+    <!-- MESH SOS INFO -->
+    <div style="background:linear-gradient(135deg,#EDE9FE,#E0E7FF);border:1px solid rgba(109,40,217,0.2);border-radius:var(--radius);padding:20px;display:flex;gap:14px;">
+      <div style="width:44px;height:44px;background:rgba(109,40,217,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;color:#7C3AED;flex-shrink:0;"><i class="fas fa-network-wired"></i></div>
+      <div>
+        <div style="font-size:0.9rem;font-weight:700;color:#4C1D95;margin-bottom:4px;">Zero-Connectivity Mesh SOS Active</div>
+        <div style="font-size:0.8rem;color:#6D28D9;line-height:1.6;">If you have no internet, your SOS will automatically hop via Bluetooth to nearby phones running Saarthi, until it reaches a device with connectivity — then fire to the police dashboard. Works in Ziro Valley, Spiti, deep Kaziranga.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAP TAB -->
+  <div class="tab-panel" id="tab-map">
+    <div class="map-mock">
+      <div class="map-bg"></div>
+      <!-- Pins -->
+      <div class="map-pin pin-pulse" style="top:35%;left:45%;" onclick="showPlaceInfo('Your Location','You are here')">
+        <div class="pin-dot pin-user"><i class="fas fa-user"></i></div>
+        <span class="pin-label" style="color:var(--saffron);">You</span>
+      </div>
+      <div class="map-pin" style="top:20%;left:25%;" onclick="showPlaceInfo('Sadar Hospital','Hospital · 1.2 km · Open 24h · 0361-2300000')">
+        <div class="pin-dot pin-red"><i class="fas fa-plus"></i></div>
+        <span class="pin-label">Hospital</span>
+      </div>
+      <div class="map-pin" style="top:55%;left:30%;" onclick="showPlaceInfo('General Hospital','Hospital · 2.8 km · Open 24h · 0361-2201234')">
+        <div class="pin-dot pin-red"><i class="fas fa-plus"></i></div>
+        <span class="pin-label">Hospital</span>
+      </div>
+      <div class="map-pin" style="top:25%;left:65%;" onclick="showPlaceInfo('Dispur Police Station','Police · 0.8 km · 0361-2260001')">
+        <div class="pin-dot pin-blue"><i class="fas fa-shield-alt"></i></div>
+        <span class="pin-label">Police</span>
+      </div>
+      <div class="map-pin" style="top:60%;left:70%;" onclick="showPlaceInfo('Guwahati Police HQ','Police · 2.1 km · 0361-2731000')">
+        <div class="pin-dot pin-blue"><i class="fas fa-shield-alt"></i></div>
+        <span class="pin-label">Police</span>
+      </div>
+      <div class="map-pin" style="top:45%;left:15%;" onclick="showPlaceInfo('Tourist Info Centre','Tourism dept · 1.5 km')">
+        <div class="pin-dot pin-green"><i class="fas fa-info"></i></div>
+        <span class="pin-label">Tourist Info</span>
+      </div>
+      <!-- Restricted zone indicator -->
+      <div style="position:absolute;top:10%;right:10%;width:80px;height:60px;border:2px dashed var(--crimson);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(239,68,68,0.05);">
+        <div style="font-size:0.55rem;font-weight:700;color:var(--crimson);text-align:center;">RESTRICTED<br>ZONE</div>
+      </div>
+    </div>
+
+    <div class="map-legend">
+      <div class="map-legend-item"><div class="ml-dot" style="background:var(--crimson);"></div>Hospital</div>
+      <div class="map-legend-item"><div class="ml-dot" style="background:var(--navy);"></div>Police Station</div>
+      <div class="map-legend-item"><div class="ml-dot" style="background:var(--emerald);"></div>Tourist Info</div>
+      <div class="map-legend-item"><div class="ml-dot" style="background:var(--saffron);"></div>Your Location</div>
+    </div>
+
+    <div class="section-title"><i class="fas fa-map-marker-alt"></i> Nearby Safety Facilities</div>
+    <div class="nearby-list">
+      <div class="nearby-item">
+        <div class="ni-icon ic-red"><i class="fas fa-hospital"></i></div>
+        <div class="ni-body">
+          <div class="ni-name">Sadar Hospital</div>
+          <div class="ni-meta"><i class="fas fa-phone" style="font-size:0.7rem;"></i> 0361-2300000 · Open 24h · Emergency ward</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="ni-dist">1.2 km</div>
+          <button class="ni-dir" onclick="showDirections('Sadar Hospital')"><i class="fas fa-directions"></i> Go</button>
+        </div>
+      </div>
+      <div class="nearby-item">
+        <div class="ni-icon ic-blue"><i class="fas fa-shield-alt"></i></div>
+        <div class="ni-body">
+          <div class="ni-name">Dispur Police Station</div>
+          <div class="ni-meta"><i class="fas fa-phone" style="font-size:0.7rem;"></i> 0361-2260001 · Open 24h</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="ni-dist">0.8 km</div>
+          <button class="ni-dir" onclick="showDirections('Dispur Police Station')"><i class="fas fa-directions"></i> Go</button>
+        </div>
+      </div>
+      <div class="nearby-item">
+        <div class="ni-icon ic-green"><i class="fas fa-info-circle"></i></div>
+        <div class="ni-body">
+          <div class="ni-name">Tourist Information Centre</div>
+          <div class="ni-meta"><i class="fas fa-phone" style="font-size:0.7rem;"></i> 1363 · Mon-Sat 9am-6pm</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="ni-dist">1.5 km</div>
+          <button class="ni-dir" onclick="showDirections('Tourist Information Centre')"><i class="fas fa-directions"></i> Go</button>
+        </div>
+      </div>
+      <div class="nearby-item">
+        <div class="ni-icon ic-red"><i class="fas fa-hospital"></i></div>
+        <div class="ni-body">
+          <div class="ni-name">General Hospital</div>
+          <div class="ni-meta"><i class="fas fa-phone" style="font-size:0.7rem;"></i> 0361-2201234 · Open 24h</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="ni-dist">2.8 km</div>
+          <button class="ni-dir" onclick="showDirections('General Hospital')"><i class="fas fa-directions"></i> Go</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EFIR TAB -->
+  <div class="tab-panel" id="tab-efir">
+    <div class="efir-card">
+      <h3><i class="fas fa-file-alt" style="color:var(--crimson);"></i> File an e-FIR / Complaint</h3>
+      <div class="form-group">
+        <label>Your Tourist ID</label>
+        <input type="text" id="efir-tid" placeholder="STH-XX-XXXXXX (from your Digital ID)">
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Incident Type *</label>
+          <select id="efir-type">
+            <option value="">Select type</option>
+            <option>Theft / Robbery</option>
+            <option>Harassment</option>
+            <option>Missing Person</option>
+            <option>Accident</option>
+            <option>Scam / Fraud</option>
+            <option>Lost Belongings</option>
+            <option>Medical Emergency</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Date & Time of Incident *</label>
+          <input type="datetime-local" id="efir-datetime">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Location of Incident *</label>
+        <input type="text" id="efir-loc" placeholder="e.g. Kaziranga Gate 2, Assam">
+      </div>
+      <div class="form-group">
+        <label>Description of Incident *</label>
+        <textarea id="efir-desc" placeholder="Describe what happened in detail. Include any identifying information about suspects or lost items…"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Upload Evidence (Optional)</label>
+        <input type="file" accept="image/*,video/*" multiple>
+      </div>
+      <div class="form-group">
+        <label>Your Contact Number *</label>
+        <input type="tel" id="efir-phone" placeholder="+91 XXXXX XXXXX">
+      </div>
+      <button class="btn-danger-full" onclick="submitEFIR()">
+        <i class="fas fa-paper-plane"></i> Submit Complaint to Authorities
+      </button>
+    </div>
+    <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:var(--radius);padding:16px;font-size:0.82rem;color:#1E40AF;line-height:1.7;">
+      <i class="fas fa-info-circle"></i>
+      <strong>After submission:</strong> Your complaint is immediately dispatched to the nearest police station and state tourism department. You'll receive an FIR number via SMS. All details are logged on the Saarthi blockchain for tamper-proof evidence.
+    </div>
+  </div>
+
+  <!-- FARES TAB -->
+  <div class="tab-panel" id="tab-fares">
+    <div class="fare-tabs">
+      <button class="fare-tab active" onclick="switchFareTab('hotels',this)"><i class="fas fa-hotel"></i> Hotels</button>
+      <button class="fare-tab" onclick="switchFareTab('taxis',this)"><i class="fas fa-car"></i> Taxi / Cab</button>
+      <button class="fare-tab" onclick="switchFareTab('attractions',this)"><i class="fas fa-landmark"></i> Attractions</button>
+    </div>
+
+    <div class="fare-panel active" id="ft-hotels">
+      <div class="fare-card">
+        <div class="fare-icon ic-blue"><i class="fas fa-hotel"></i></div>
+        <div class="fare-body">
+          <div class="fare-name">Brahmaputra Grand Hotel</div>
+          <div class="fare-detail">⭐ 4.2 · Guwahati City Centre · Breakfast included</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="fare-price">₹2,800</div>
+          <div class="fare-price-sub">per night</div>
+          <button class="fare-book" onclick="bookItem('Brahmaputra Grand Hotel')">Book</button>
+        </div>
+      </div>
+      <div class="fare-card">
+        <div class="fare-icon ic-blue"><i class="fas fa-hotel"></i></div>
+        <div class="fare-body">
+          <div class="fare-name">Heritage Inn Kaziranga</div>
+          <div class="fare-detail">⭐ 4.5 · Near Kaziranga · Safari package included</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="fare-price">₹4,500</div>
+          <div class="fare-price-sub">per night</div>
+          <button class="fare-book" onclick="bookItem('Heritage Inn Kaziranga')">Book</button>
+        </div>
+      </div>
+      <div class="fare-card">
+        <div class="fare-icon ic-green"><i class="fas fa-leaf"></i></div>
+        <div class="fare-body">
+          <div class="fare-name">Majuli Eco Resort</div>
+          <div class="fare-detail">⭐ 4.8 · Majuli Island · Organic meals, River view</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="fare-price">₹3,200</div>
+          <div class="fare-price-sub">per night</div>
+          <button class="fare-book" onclick="bookItem('Majuli Eco Resort')">Book</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="fare-panel" id="ft-taxis">
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
+        <div class="form-group"><label>Pickup Location</label><input type="text" id="pickup" placeholder="e.g. Guwahati Airport"></div>
+        <div class="form-group"><label>Drop Location</label><input type="text" id="drop" placeholder="e.g. Kaziranga"></div>
+        <button onclick="estimateFare()" style="background:var(--navy);color:#fff;border:none;border-radius:var(--radius);padding:12px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:6px;"><i class="fas fa-search"></i> Get Fare Estimate</button>
+      </div>
+      <div id="fare-estimate-result" style="display:none;">
+        <div class="fare-card">
+          <div class="fare-icon ic-amber"><i class="fas fa-car"></i></div>
+          <div class="fare-body">
+            <div class="fare-name">Saarthi-Verified Sedan</div>
+            <div class="fare-detail">AC · 4 seats · GPS tracked · Verified driver</div>
+          </div>
+          <div style="text-align:right;"><div class="fare-price">₹1,200</div><div class="fare-price-sub">estimated</div><button class="fare-book" onclick="bookItem('Verified Sedan')">Book</button></div>
+        </div>
+        <div class="fare-card">
+          <div class="fare-icon ic-blue"><i class="fas fa-shuttle-van"></i></div>
+          <div class="fare-body">
+            <div class="fare-name">Saarthi-Verified SUV</div>
+            <div class="fare-detail">AC · 6 seats · GPS tracked · Group friendly</div>
+          </div>
+          <div style="text-align:right;"><div class="fare-price">₹1,650</div><div class="fare-price-sub">estimated</div><button class="fare-book" onclick="bookItem('Verified SUV')">Book</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fare-panel" id="ft-attractions">
+      <div class="fare-card">
+        <div class="fare-icon ic-green"><i class="fas fa-paw"></i></div>
+        <div class="fare-body">
+          <div class="fare-name">Kaziranga National Park Safari</div>
+          <div class="fare-detail">Morning Jeep Safari · 3 hours · Rhino sighting guaranteed</div>
+        </div>
+        <div style="text-align:right;"><div class="fare-price">₹1,800</div><div class="fare-price-sub">per person</div><button class="fare-book" onclick="buyTicket('Kaziranga Safari')">Buy Ticket</button></div>
+      </div>
+      <div class="fare-card">
+        <div class="fare-icon ic-amber"><i class="fas fa-om"></i></div>
+        <div class="fare-body">
+          <div class="fare-name">Kamakhya Temple Entry</div>
+          <div class="fare-detail">Guided tour · Prasad included · Priority entry</div>
+        </div>
+        <div style="text-align:right;"><div class="fare-price">₹200</div><div class="fare-price-sub">per person</div><button class="fare-book" onclick="buyTicket('Kamakhya Temple')">Buy Ticket</button></div>
+      </div>
+      <div class="fare-card">
+        <div class="fare-icon ic-blue"><i class="fas fa-water"></i></div>
+        <div class="fare-body">
+          <div class="fare-name">Majuli Island Ferry + Stay Package</div>
+          <div class="fare-detail">Ferry both ways · 2 nights eco stay · Tribal cultural tour</div>
+        </div>
+        <div style="text-align:right;"><div class="fare-price">₹4,200</div><div class="fare-price-sub">per person</div><button class="fare-book" onclick="buyTicket('Majuli Package')">Buy Ticket</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// TAB SWITCHING
+function switchTab(id,btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+function switchFareTab(id,btn){
+  document.querySelectorAll('.fare-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.fare-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('ft-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// SOS
+let sosTimerID,sosCount=3;
+function startSOS(){
+  document.getElementById('sos-cancel-btn').style.display='block';
+  document.getElementById('sos-countdown').style.display='block';
+  document.getElementById('sos-main-btn').style.display='none';
+  sosCount=3;
+  document.getElementById('sos-cd').textContent=sosCount;
+  sosTimerID=setInterval(()=>{
+    sosCount--;
+    document.getElementById('sos-cd').textContent=sosCount;
+    if(sosCount<=0){
+      clearInterval(sosTimerID);
+      fireSOS();
+    }
+  },1000);
+}
+function cancelSOS(){
+  clearInterval(sosTimerID);
+  document.getElementById('sos-cancel-btn').style.display='none';
+  document.getElementById('sos-countdown').style.display='none';
+  document.getElementById('sos-main-btn').style.display='flex';
+}
+function fireSOS(){
+  alert('🚨 SOS ACTIVATED!\n\nYour live GPS location has been sent to:\n• Dispur Police Station (0.8 km) — ETA 6 min\n• Emergency Contacts: Raj Sharma +91 98765 43210\n\nStay calm. Help is on the way.\n\nSOS ID: SOS-2025-' + Math.floor(Math.random()*9000+1000));
+  cancelSOS();
+}
+
+// MAP
+function showPlaceInfo(name,info){
+  showToast('📍 ' + name + ': ' + info);
+}
+function showDirections(dest){
+  showToast('🗺️ Opening directions to ' + dest + '…');
+  setTimeout(()=>window.open('https://maps.google.com/?q='+encodeURIComponent(dest+'Guwahati'),'_blank'),800);
+}
+
+// EFIR
+function submitEFIR(){
+  const type=document.getElementById('efir-type').value;
+  const desc=document.getElementById('efir-desc').value;
+  if(!type||!desc){showToast('⚠️ Please fill in incident type and description');return;}
+  const num='FIR-2025-0'+Math.floor(Math.random()*900+88);
+  alert(`✅ Complaint Submitted!\n\nFIR Number: ${num}\n\nDispatched to:\n• Local Police Station\n• Tourism Department\n\nYou will receive an SMS confirmation on your registered number.\n\nBlockchain TX: 0x${Math.random().toString(16).substr(2,20)}...`);
+}
+
+// FARES
+function estimateFare(){
+  const p=document.getElementById('pickup').value;
+  const d=document.getElementById('drop').value;
+  if(!p||!d){showToast('⚠️ Please enter pickup and drop locations');return;}
+  document.getElementById('fare-estimate-result').style.display='block';
+}
+function bookItem(name){showToast('✅ Booking ' + name + '… You will receive a confirmation SMS.');}
+function buyTicket(name){showToast('🎟️ Generating e-ticket for ' + name + '…');}
+
+// TOAST
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>

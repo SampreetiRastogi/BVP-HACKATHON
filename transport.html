@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saarthi — Fare Estimator & Transport Finder</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:#1E3A8A; --navy-dk:#162d6f; --navy-lt:#2d4ea8;
+      --saffron:#F59E0B; --crimson:#EF4444; --emerald:#10B981;
+      --bg:#F0F9FF; --surface:#FFFFFF; --border:#E2E8F0;
+      --tx1:#0F172A; --tx2:#334155; --tx3:#64748B; --tx4:#94A3B8;
+      --radius:14px; --shadow:0 4px 24px rgba(30,58,138,0.09);
+      --shadow-lg:0 12px 40px rgba(30,58,138,0.14);
+      --transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+      --font:'Plus Jakarta Sans',sans-serif;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:var(--font);background:linear-gradient(135deg,#F0F9FF 0%,#E0F2FE 100%);color:var(--tx1);min-height:100vh;padding-bottom:60px;}
+
+    /* ── HEADER ── */
+    header{background:#fff;border-bottom:1px solid var(--border);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(30,58,138,0.06);}
+    .logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+    .logo-icon{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--navy),var(--navy-lt));display:flex;align-items:center;justify-content:center;overflow:hidden;}
+    .logo-icon img{width:100%;height:100%;object-fit:contain;}
+    .logo-text{font-size:1.2rem;font-weight:800;color:var(--navy);}
+    .logo-text span{color:var(--saffron);}
+    .back-btn{display:inline-flex;align-items:center;gap:7px;color:var(--navy);font-weight:500;font-size:0.875rem;text-decoration:none;padding:7px 14px;border-radius:8px;transition:var(--transition);}
+    .back-btn:hover{background:#EFF6FF;}
+
+    /* ── LAYOUT ── */
+    .page{max-width:1000px;margin:0 auto;padding:36px 20px 0;}
+    .page-head{text-align:center;margin-bottom:32px;}
+    .page-badge{display:inline-flex;align-items:center;gap:7px;background:#EFF6FF;color:var(--navy);font-size:0.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:5px 13px;border-radius:50px;margin-bottom:12px;}
+    .page-head h1{font-size:2rem;font-weight:800;color:var(--tx1);letter-spacing:-0.5px;margin-bottom:8px;}
+    .page-head p{color:var(--tx3);font-size:0.95rem;}
+
+    /* ── SEARCH CARD ── */
+    .search-card{background:linear-gradient(135deg,var(--navy),var(--navy-lt));border-radius:20px;padding:30px;margin-bottom:28px;position:relative;overflow:hidden;}
+    .search-card::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px);background-size:40px 40px;}
+    .search-grid{display:grid;grid-template-columns:1fr 60px 1fr;gap:12px;align-items:end;margin-bottom:16px;position:relative;z-index:1;}
+    .search-field label{font-size:0.75rem;font-weight:700;color:rgba(255,255,255,0.6);letter-spacing:0.5px;margin-bottom:6px;display:block;}
+    .sf-wrap{position:relative;}
+    .sf-wrap i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,0.5);font-size:0.9rem;}
+    .sf-wrap input,.sf-wrap select{width:100%;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:12px 13px 12px 36px;font-size:0.9rem;font-family:var(--font);color:#fff;outline:none;transition:var(--transition);}
+    .sf-wrap input::placeholder{color:rgba(255,255,255,0.45);}
+    .sf-wrap input:focus,.sf-wrap select:focus{background:rgba(255,255,255,0.18);border-color:rgba(255,255,255,0.4);}
+    .sf-wrap select option{background:var(--navy);color:#fff;}
+    .swap-btn{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.9rem;transition:var(--transition);margin-bottom:2px;}
+    .swap-btn:hover{background:rgba(255,255,255,0.25);transform:rotate(180deg);}
+    .search-row2{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end;position:relative;z-index:1;}
+    .find-btn{background:var(--saffron);color:#fff;border:none;border-radius:10px;padding:12px 28px;font-size:0.95rem;font-weight:700;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:8px;white-space:nowrap;transition:var(--transition);}
+    .find-btn:hover{background:#d97706;transform:translateY(-1px);box-shadow:0 6px 18px rgba(245,158,11,0.4);}
+
+    /* ── FILTER / SORT ROW ── */
+    .filter-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+    .filter-row h3{font-size:1.1rem;font-weight:700;color:var(--tx1);}
+    .filter-controls{display:flex;gap:10px;}
+    .fc-select{border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-size:0.82rem;font-family:var(--font);color:var(--tx2);background:#fff;outline:none;cursor:pointer;}
+    .fc-select:focus{border-color:var(--navy);}
+
+    /* ── TRANSPORT TABS ── */
+    .tab-row{display:flex;gap:8px;margin-bottom:20px;}
+    .tab{padding:8px 18px;border-radius:50px;border:1.5px solid var(--border);background:#fff;font-size:0.82rem;font-weight:600;color:var(--tx3);cursor:pointer;transition:var(--transition);font-family:var(--font);display:flex;align-items:center;gap:6px;}
+    .tab.active,.tab:hover{background:var(--navy);color:#fff;border-color:var(--navy);}
+
+    /* ── LOADING ── */
+    .loading-state{text-align:center;padding:56px;display:none;}
+    .loading-state.show{display:block;}
+    .spin{width:52px;height:52px;border:5px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .loading-state p{font-size:1rem;color:var(--tx3);}
+
+    /* ── NO RESULTS ── */
+    .no-results{text-align:center;padding:56px;display:none;}
+    .no-results.show{display:block;}
+    .no-results i{font-size:3rem;color:var(--saffron);margin-bottom:14px;display:block;}
+    .no-results p{font-size:1rem;color:var(--tx3);}
+
+    /* ── RESULTS ── */
+    #results-section{display:none;}
+    #results-section.show{display:block;}
+    .transport-list{display:flex;flex-direction:column;gap:14px;}
+
+    /* ── TRANSPORT CARD ── */
+    .tc{
+      background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+      padding:22px;display:flex;align-items:center;gap:18px;cursor:pointer;
+      transition:var(--transition);position:relative;overflow:hidden;
+    }
+    .tc:hover{border-color:var(--navy);box-shadow:var(--shadow);transform:translateY(-2px);}
+    .tc.selected{border-color:var(--navy);box-shadow:0 0 0 3px rgba(30,58,138,0.12);}
+    .tc-best{position:absolute;top:0;left:0;background:linear-gradient(90deg,var(--saffron),#f97316);color:#fff;font-size:0.62rem;font-weight:800;padding:4px 12px;letter-spacing:1px;text-transform:uppercase;border-radius:0 0 8px 0;}
+    .tc-icon{width:58px;height:58px;border-radius:14px;background:#EFF6FF;color:var(--navy);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;transition:var(--transition);}
+    .tc:hover .tc-icon{background:var(--navy);color:#fff;}
+    .tc-body{flex:1;}
+    .tc-type{font-size:1.1rem;font-weight:800;color:var(--tx1);display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+    .eco-tag{display:inline-flex;align-items:center;gap:4px;background:rgba(16,185,129,0.1);color:var(--emerald);font-size:0.68rem;font-weight:600;padding:3px 9px;border-radius:50px;}
+    .verified-tag{display:inline-flex;align-items:center;gap:4px;background:#EFF6FF;color:var(--navy);font-size:0.68rem;font-weight:600;padding:3px 9px;border-radius:50px;}
+    .tc-company{font-size:0.82rem;color:var(--tx3);margin-bottom:10px;}
+    .tc-meta{display:flex;gap:18px;font-size:0.8rem;color:var(--tx3);flex-wrap:wrap;}
+    .tc-meta span{display:flex;align-items:center;gap:6px;}
+    .tc-meta i{color:var(--navy);}
+    .tc-right{text-align:right;flex-shrink:0;}
+    .tc-price{font-size:1.6rem;font-weight:800;color:var(--navy);line-height:1;}
+    .tc-price-note{font-size:0.72rem;color:var(--tx4);margin-top:3px;}
+    .tc-book{background:var(--navy);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:0.8rem;font-weight:700;cursor:pointer;font-family:var(--font);margin-top:10px;display:inline-flex;align-items:center;gap:5px;transition:var(--transition);}
+    .tc-book:hover{background:var(--navy-dk);}
+
+    /* ── SAFETY TIPS ── */
+    .safety-tips{background:linear-gradient(135deg,#ECFDF5,#D1FAE5);border:1px solid rgba(16,185,129,0.2);border-radius:var(--radius);padding:20px;margin-top:24px;}
+    .safety-tips h4{font-size:0.95rem;font-weight:700;color:#065F46;margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+    .safety-tips ul{list-style:none;display:flex;flex-direction:column;gap:7px;}
+    .safety-tips li{font-size:0.83rem;color:#047857;display:flex;align-items:flex-start;gap:8px;}
+    .safety-tips li i{color:var(--emerald);flex-shrink:0;margin-top:2px;}
+
+    /* ── INDIA BADGE ── */
+    .india-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.2);color:var(--saffron);font-size:0.72rem;font-weight:600;padding:4px 12px;border-radius:50px;margin-top:8px;}
+
+    /* ── TOAST ── */
+    .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#1E293B;color:#fff;padding:11px 22px;border-radius:50px;font-size:0.85rem;font-weight:500;z-index:1000;display:none;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(0,0,0,0.25);}
+    .toast.show{display:flex;}
+
+    @media(max-width:768px){
+      .search-grid{grid-template-columns:1fr;gap:10px;}
+      .search-row2{grid-template-columns:1fr;}
+      .swap-btn{display:none;}
+      .tc{flex-wrap:wrap;}
+      .tc-right{width:100%;display:flex;justify-content:space-between;align-items:center;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <a href="index.html" class="logo">
+    <div class="logo-icon">
+      <img src="saarthi_logo.png" alt="S" onerror="this.parentElement.style.fontSize='1.1rem';this.parentElement.style.color='#fff';this.parentElement.style.fontWeight='900';this.remove();this.parentElement.textContent='S'">
+    </div>
+    <span class="logo-text">SAAR<span>THI</span></span>
+  </a>
+  <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
+</header>
+
+<div class="page">
+
+  <!-- PAGE HEADER -->
+  <div class="page-head">
+    <div class="page-badge"><i class="fas fa-rupee-sign"></i> Verified Fares in Indian Rupees</div>
+    <h1>Find Cheapest Transport</h1>
+    <p>Compare prices across buses, trains, flights & cabs — book safe, Saarthi-verified options</p>
+  </div>
+
+  <!-- SEARCH CARD -->
+  <div class="search-card">
+    <div class="search-grid">
+      <div class="search-field">
+        <label><i class="fas fa-map-marker-alt"></i> FROM</label>
+        <div class="sf-wrap">
+          <i class="fas fa-location-dot"></i>
+          <input type="text" id="source" placeholder="Your current location" value="Mumbai">
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-end;justify-content:center;position:relative;z-index:1;">
+        <button class="swap-btn" id="swap-btn" title="Swap locations"><i class="fas fa-right-left"></i></button>
+      </div>
+      <div class="search-field">
+        <label><i class="fas fa-flag"></i> TO</label>
+        <div class="sf-wrap">
+          <i class="fas fa-location-dot"></i>
+          <input type="text" id="destination" placeholder="Your destination" value="Delhi">
+        </div>
+      </div>
+    </div>
+    <div class="search-row2">
+      <div class="search-field">
+        <label><i class="fas fa-users"></i> PASSENGERS</label>
+        <div class="sf-wrap">
+          <i class="fas fa-user"></i>
+          <select id="passengers">
+            <option value="1">1 Passenger</option>
+            <option value="2">2 Passengers</option>
+            <option value="3">3 Passengers</option>
+            <option value="4" selected>4 Passengers</option>
+            <option value="6">6 Passengers</option>
+          </select>
+        </div>
+      </div>
+      <div class="search-field">
+        <label><i class="fas fa-calendar"></i> TRAVEL DATE</label>
+        <div class="sf-wrap">
+          <i class="fas fa-calendar-days"></i>
+          <input type="date" id="date">
+        </div>
+      </div>
+      <button class="find-btn" id="find-btn">
+        <i class="fas fa-search"></i> Find Options
+      </button>
+    </div>
+    <div style="position:relative;z-index:1;margin-top:12px;">
+      <div class="india-badge"><i class="fas fa-shield-alt"></i> All listed operators are Saarthi-verified for tourist safety</div>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading-state" id="loading-state">
+    <div class="spin"></div>
+    <p>Finding the best transport options for you…</p>
+  </div>
+
+  <!-- NO RESULTS -->
+  <div class="no-results" id="no-results">
+    <i class="fas fa-exclamation-circle"></i>
+    <p>No transport options found for this route. Please try different locations.</p>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results-section">
+    <div class="filter-row">
+      <h3 id="results-title">Available Options</h3>
+      <div class="filter-controls">
+        <select class="fc-select" id="sort-by" onchange="applySort()">
+          <option value="price">Sort: Price</option>
+          <option value="duration">Sort: Duration</option>
+          <option value="rating">Sort: Rating</option>
+        </select>
+        <select class="fc-select" id="filter-by" onchange="applyFilter()">
+          <option value="all">All Types</option>
+          <option value="bus">Bus</option>
+          <option value="train">Train</option>
+          <option value="flight">Flights</option>
+          <option value="car">Cab / Rental</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="tab-row">
+      <div class="tab active" onclick="setTab(this,'all')"><i class="fas fa-list"></i> All</div>
+      <div class="tab" onclick="setTab(this,'bus')"><i class="fas fa-bus"></i> Bus</div>
+      <div class="tab" onclick="setTab(this,'train')"><i class="fas fa-train"></i> Train</div>
+      <div class="tab" onclick="setTab(this,'flight')"><i class="fas fa-plane"></i> Flight</div>
+      <div class="tab" onclick="setTab(this,'car')"><i class="fas fa-car"></i> Cab</div>
+    </div>
+
+    <div class="transport-list" id="transport-list"></div>
+
+    <!-- SAFETY TIPS -->
+    <div class="safety-tips">
+      <h4><i class="fas fa-shield-alt"></i> Saarthi Travel Safety Tips</h4>
+      <ul>
+        <li><i class="fas fa-check-circle"></i> Always book through Saarthi-verified operators for tourist safety assurance.</li>
+        <li><i class="fas fa-check-circle"></i> Share your live trip status with emergency contacts via the Saarthi app.</li>
+        <li><i class="fas fa-check-circle"></i> For remote routes (NE India, Himachal), enable offline SOS mesh mode before boarding.</li>
+        <li><i class="fas fa-check-circle"></i> Keep your Digital ID QR accessible — some checkposts may scan it for safety verification.</li>
+        <li><i class="fas fa-check-circle"></i> Use 1363 (Tourist Helpline) for any transport-related emergencies across India.</li>
+      </ul>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── DATA ── */
+const allTransport = [
+  {type:'Bus',company:'SRT Travels',icon:'bus',duration:'20h 30m',departure:'22:30',arrival:'19:00',rating:'4.2',price:1899,eco:true,best:true,verified:true},
+  {type:'Bus',company:'VRL Travels',icon:'bus',duration:'22h 10m',departure:'19:00',arrival:'17:10',rating:'4.0',price:1699,eco:true,best:false,verified:true},
+  {type:'Train',company:'Rajdhani Express (IRCTC)',icon:'train',duration:'16h 15m',departure:'16:00',arrival:'08:15',rating:'4.5',price:6540,eco:true,best:false,verified:true},
+  {type:'Train',company:'August Kranti Rajdhani',icon:'train',duration:'17h 40m',departure:'17:30',arrival:'11:10',rating:'4.3',price:4890,eco:true,best:false,verified:true},
+  {type:'Flight',company:'IndiGo Airlines',icon:'plane',duration:'2h 20m',departure:'09:30',arrival:'11:50',rating:'4.7',price:12499,eco:false,best:false,verified:true},
+  {type:'Flight',company:'Air India',icon:'plane',duration:'2h 05m',departure:'07:00',arrival:'09:05',rating:'4.4',price:9999,eco:false,best:false,verified:true},
+  {type:'Cab / Rental',company:'Zoomcar (Self-Drive)',icon:'car',duration:'~16h',departure:'Any time',arrival:'Flexible',rating:'4.3',price:7599,eco:false,best:false,verified:true},
+  {type:'Cab / Rental',company:'Saarthi-Verified Cab',icon:'car',duration:'~15h',departure:'Any time',arrival:'Flexible',rating:'4.6',price:8200,eco:false,best:false,verified:true},
+];
+
+let activeFilter = 'all';
+let currentData = [...allTransport];
+
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded', () => {
+  const d = new Date(); d.setDate(d.getDate()+1);
+  document.getElementById('date').valueAsDate = d;
+
+  document.getElementById('swap-btn').addEventListener('click', () => {
+    const s = document.getElementById('source');
+    const d = document.getElementById('destination');
+    [s.value, d.value] = [d.value, s.value];
+  });
+
+  document.getElementById('find-btn').addEventListener('click', findTransport);
+});
+
+function findTransport() {
+  const src = document.getElementById('source').value.trim();
+  const dst = document.getElementById('destination').value.trim();
+  if (!src || !dst) { showToast('⚠️ Please enter both source and destination'); return; }
+
+  document.getElementById('loading-state').classList.add('show');
+  document.getElementById('no-results').classList.remove('show');
+  document.getElementById('results-section').classList.remove('show');
+
+  setTimeout(() => {
+    document.getElementById('loading-state').classList.remove('show');
+    currentData = [...allTransport];
+    document.getElementById('results-title').textContent = `Transport: ${src} → ${dst}`;
+    renderList(currentData);
+    document.getElementById('results-section').classList.add('show');
+  }, 1800);
+}
+
+function renderList(data) {
+  const cont = document.getElementById('transport-list');
+  const pax = parseInt(document.getElementById('passengers').value);
+  cont.innerHTML = '';
+  if (!data.length) { document.getElementById('no-results').classList.add('show'); return; }
+  document.getElementById('no-results').classList.remove('show');
+
+  data.forEach(opt => {
+    const div = document.createElement('div');
+    div.className = 'tc';
+    div.innerHTML = `
+      ${opt.best ? '<div class="tc-best">✦ BEST VALUE</div>' : ''}
+      <div class="tc-icon"><i class="fas fa-${opt.icon}"></i></div>
+      <div class="tc-body">
+        <div class="tc-type">
+          ${opt.type}
+          ${opt.eco ? '<span class="eco-tag"><i class="fas fa-leaf"></i> Eco-friendly</span>' : ''}
+          ${opt.verified ? '<span class="verified-tag"><i class="fas fa-shield-alt"></i> Verified</span>' : ''}
+        </div>
+        <div class="tc-company">${opt.company} &nbsp;·&nbsp; ⭐ ${opt.rating}</div>
+        <div class="tc-meta">
+          <span><i class="fas fa-clock"></i> ${opt.duration}</span>
+          <span><i class="fas fa-arrow-right"></i> ${opt.departure} → ${opt.arrival}</span>
+          <span><i class="fas fa-users"></i> ${pax} passenger${pax>1?'s':''}</span>
+        </div>
+      </div>
+      <div class="tc-right">
+        <div class="tc-price">₹${(opt.price * (pax/4)).toLocaleString('en-IN',{maximumFractionDigits:0})}</div>
+        <div class="tc-price-note">Total for ${pax} passenger${pax>1?'s':''}</div>
+        <button class="tc-book" onclick="bookOption('${opt.type}','${opt.company}')">
+          <i class="fas fa-ticket-alt"></i> Book Now
+        </button>
+      </div>`;
+    div.addEventListener('click', e => {
+      if (e.target.closest('.tc-book')) return;
+      document.querySelectorAll('.tc').forEach(c => c.classList.remove('selected'));
+      div.classList.add('selected');
+    });
+    cont.appendChild(div);
+  });
+}
+
+function applySort() {
+  const by = document.getElementById('sort-by').value;
+  const pax = parseInt(document.getElementById('passengers').value);
+  currentData = [...currentData].sort((a,b) => {
+    if (by === 'price') return (a.price*(pax/4)) - (b.price*(pax/4));
+    if (by === 'rating') return parseFloat(b.rating) - parseFloat(a.rating);
+    if (by === 'duration') return parseDur(a.duration) - parseDur(b.duration);
+    return 0;
+  });
+  renderList(currentData);
+}
+
+function applyFilter() {
+  const ft = document.getElementById('filter-by').value;
+  activeFilter = ft;
+  currentData = ft === 'all' ? [...allTransport] : allTransport.filter(o => o.icon === ft || (ft==='car' && o.icon==='car'));
+  renderList(currentData);
+}
+
+function setTab(el, type) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  activeFilter = type;
+  currentData = type === 'all' ? [...allTransport] : allTransport.filter(o => {
+    if (type === 'car') return o.icon === 'car';
+    if (type === 'bus') return o.icon === 'bus';
+    if (type === 'train') return o.icon === 'train';
+    if (type === 'flight') return o.icon === 'plane';
+    return true;
+  });
+  renderList(currentData);
+}
+
+function parseDur(dur) {
+  let mins = 0;
+  const h = dur.match(/(\d+)h/); const m = dur.match(/(\d+)m/);
+  if (h) mins += parseInt(h[1]) * 60;
+  if (m) mins += parseInt(m[1]);
+  return mins || 999;
+}
+
+function bookOption(type, company) {
+  showToast(`✅ Booking ${type} with ${company}… You'll receive a confirmation SMS on your registered number.`);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+</script>
+</body>
+</html>
